@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <title>TuG Vertretungen</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- WebApp Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="app.css" />
+    <!-- WebApp JavaScript Library -->
+    <script type="text/javascript" src="app.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            /* Initialization */
+            {
+                /* Resize WebView to fit screen */
+                $('#webview').css("height", window.innerHeight - 50);
+    
+                /* Create new VP-Object */
+                var vp = new Vertretungsplan("webview");
+                
+                /* Set CW */ 
+                $('#cwDisplay').html(vp.CW);
+                
+                /* Check if there is a classList. If not, download it */
+                if (localStorage.getItem("classList") == null) {
+                    vp.retrieveClassList();
+                }
+                
+                /* Global Variable for Favorite List */
+                var classFavList = [];
+    
+                /* First visit dialog */
+                if (localStorage.getItem("first-visit") == null) {
+                    $('#getStartedModal').modal("show");
+                }
+    
+                /* Check if there is a classID in LocalStorage */
+                if (localStorage.getItem("classID") == null) {
+                    vp.setType("bigplan");
+                    vp.navigate();
+                } else {
+                    vp.navigate();
+                }
+            }
+
+            /* Event Handler */
+            {
+                /* If Window was resized, adjust WebView-Height */
+                $(window).resize(function () {
+                    $('#webview').css("height", window.innerHeight - 50);
+                });
+                
+                /* Accept get started message */
+                $('#getStartedBtn').click(function (e) {
+                    localStorage.setItem("first-visit", "false");
+                });
+                
+                /* Choose plan */
+                {
+                    $('#setClassBtn').click(function () {
+                        refreshFavListSelector();
+                        $('.classSelectionModal').modal('show');
+                    });
+            
+                    /* Show Event for class selection modal dialog */
+                    $('.classSelectionModal').on("show.bs.modal", function (e) {
+                        $('#classListSelector').empty();
+                        classList = vp.getClassList();
+        
+                        for (i = 0; i < classList.length; i++) {
+                            $('#classListSelector').append('<option value="' + 
+                            (i + 1) + 
+                            '">' + 
+                            classList[i] + 
+                            '</option>');
+                        }
+        
+                        if (localStorage.getItem("classID") != null) {
+                            $('#classListSelector option[value="' + vp.classID.toString() + '"]')
+                                .attr("selected", true);
+                        }
+                    });
+                    
+                    /* Switch to Big Plan */
+                    $('.setBigPlanBtn').click(function () {
+                        //$('#webview').attr("src", vp.getBigPlanURL());
+                        vp.setType("bigplan");
+                        vp.navigate();
+                        $('.classSelectionModal').modal('hide');
+                    });
+                    
+                    /* Select the BIG plan with all classes */
+                    $('#setPlanBtn').click(function () {
+                        vp.setClassID($('#classListSelector').val());
+        
+                        if (vp.currentType === "bigplan") {
+                            vp.currentType = "calendar";
+                        }
+        
+                        vp.navigate();
+                        $('.classSelectionModal').modal("hide");
+                    });
+                }
+                
+                /* CW management */
+                {
+                    /* Switch CW to previous week */
+                    $('#prevWeekBtn').click(function () {
+                        if (vp.getCurrentCW() < vp.CW) {
+                            vp.CW = vp.CW - 1;
+                            $('#cwDisplay').html(vp.CW);
+                            vp.navigate();
+                        }
+        
+                        /* Disable button when the next step would go to the past */
+                        if (vp.getCurrentCW() == vp.CW) {
+                            document.getElementById("prevWeekBtn").setAttribute("disabled", "disabled");
+                        }
+                    });
+        
+                    /* Switch CW to next week */
+                    $('#nextWeekBtn').click(function () {
+                        vp.CW = vp.CW + 1;
+                        $('#cwDisplay').html(vp.CW);
+                        vp.navigate();
+        
+                        /* Enable button */
+                        $('#prevWeekBtn').removeAttr("disabled");
+                    });
+                }
+    
+                /* View Management */
+                {
+                    /* Set viewport to calendar mode */
+                    $('.setCalendarViewBtn').click(function () {
+                        vp.setType("calendar");
+                        vp.navigate();
+                        $('#menuModal').modal("hide");
+                    });
+                    
+                    /* Set viewport to list mode */
+                    $('.setListViewBtn').click(function () {
+                        vp.setType("list");
+                        vp.navigate();
+                        $('#menuModal').modal("hide");
+                    });
+                }
+    
+                /* Favorites Management */
+                {
+                    /* Refresh the favorite list selector */
+                    function refreshFavListSelector() {
+                        var classFavList = JSON.parse(localStorage.getItem("classFavList"));
+                        $('#favListSelector').empty();
+                        var classList = vp.getClassList();
+        
+                        var isFaved = false;
+        
+                        $('#favListSelector').append('<option value="0">Bitte auswählen</option>');
+        
+                        for (i = 0; i < classFavList.length; i++) {
+        
+                            if (classFavList[i] == vp.classID) {
+                                isFaved = true;
+                            }
+        
+                            $('#favListSelector').append('<option value="' + 
+                                classFavList[i] + 
+                                '">' + 
+                                classList[classFavList[i] - 1] + 
+                                '</option>');
+                        }
+        
+                        if (isFaved) {
+                            $('#makeFavLabel').html("De-Favorisieren");
+                            $('.makeFavGlyphiconStar').show();
+                            $('.makeFavGlyphiconStarEmpty').hide();
+        
+                        } else {
+                            $('#makeFavLabel').html("Favorisieren");
+                            $('.makeFavGlyphiconStar').hide();
+                            $('.makeFavGlyphiconStarEmpty').show();
+                        }
+                    }
+        
+                    /* Check if favorite class list exists in LocalStorage */
+                    if (localStorage.getItem("classFavList") == null) {
+                        localStorage.setItem("classFavList", JSON.stringify(classFavList));
+                        refreshFavListSelector();
+                    } else {
+                        refreshFavListSelector();
+                    }
+        
+                    /* Add a new favorite to favorite list */
+                    $('.makeFav').click(function () {
+                        isAlreadyFav = false;
+                        classID = null;
+        
+                        for (i = 0; i < classFavList.length; i++) {
+                            if (classFavList[i] == vp.classID) {
+                                isAlreadyFav = true;
+                                classID = i;
+                                break;
+                            }
+                        }
+        
+                        if (!isAlreadyFav) {
+                            classFavList[classFavList.length] = vp.classID;
+                            localStorage.setItem("classFavList", JSON.stringify(classFavList));
+        
+                            refreshFavListSelector();
+                        } else {
+                            classFavList.splice(classID, 1);
+                            localStorage.setItem("classFavList", JSON.stringify(classFavList));
+        
+                            refreshFavListSelector();
+                            $('#makeFavLabel').html("Favorisieren");
+                            $('.makeFavGlyphiconStar').hide();
+                            $('.makeFavGlyphiconStarEmpty').show();
+                        }
+                    });
+        
+                    /* Change event handler of class selection (auto-change plan) */
+                    $('#classListSelector').change(function () {
+                        vp.setClassID($('#classListSelector').val());
+        
+                        if (vp.currentType === "bigplan") {
+                            vp.currentType = "calendar";
+                        }
+        
+                        vp.navigate();
+                        $('.classSelectionModal').modal("hide");
+                    });
+        
+                    /* Change event handler of favorite selection (auto-change plan) */
+                    $('#favListSelector').change(function () {
+                        vp.setClassID($('#favListSelector').val());
+        
+                        if (vp.currentType === "bigplan") {
+                            vp.currentType = "calendar";
+                        }
+        
+                        vp.navigate();
+                        $('.classSelectionModal').modal("hide");
+        
+                    });
+                }
+    
+                /* Menu event handlers */
+                {
+                    /* Refresh the class list / download a new version of classlist */
+                    $('#refreshClassList').click(function () {
+                        vp.retrieveClassList();
+                        $('#menuModal').modal("hide");
+                    });
+        
+                    /* Show about content */
+                    $('#aboutBtn').click(function () {
+                        $('#aboutContent').show();
+                    });   
+                }
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img alt="TuG Vertretungen Logo" src="logo.png" style="margin-top:-0.5em" />
+                </a>
+            </div>
+            <div class="btn-toolbar" role="toolbar">
+
+                <div class="btn-group" role="group">
+
+                    <button id="prevWeekBtn" type="button" disabled class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true" aria-label="Woche zurück"></span></button>
+
+                    <button id="cwDisplayBtn" class="btn btn-info navbar-btn"><span class="glyphicon glyphicon-time" aria-hidden="true" aria-label="Kalenderwoche"></span><span id="cwDisplay"></span></button>
+
+                    <button id="nextWeekBtn" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true" aria-label="Woche vor"></span></button>
+
+                </div>
+                <div class="btn-group" role="group">
+
+                    <button id="setClassBtn" type="button" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-pushpin" aria-hidden="true" aria-label="Plan zur Anzeige auswählen"></span>
+                    </button>
+                    <button type="button" class="btn btn-default navbar-btn makeFav" id="makeFavSmall"><span class="glyphicon glyphicon-star makeFavGlyphiconStar" aria-hidden="true" aria-label="Aktuellen Plan de-favorisieren"></span><span class="glyphicon glyphicon-star-empty makeFavGlyphiconStarEmpty" aria-hidden="true" aria-label="Aktuellen Plan favorisieren"></span></button>
+
+                    <button id="bigPlanMenu" type="button" class="btn btn-default navbar-btn setBigPlanBtn"><span class="glyphicon glyphicon-home" aria-hidden="true" aria-label="Gesamtplan aufrufen"></span></button>
+
+                    <button id="setCalendarMenu" type="button" class="btn btn-default navbar-btn setCalendarViewBtn"><span class="glyphicon glyphicon-calendar" aria-hidden="true" aria-label="Kalenderansicht"></span></button>
+                    <button id="setListMenu" type="button" class="btn btn-default navbar-btn setListViewBtn"><span class="glyphicon glyphicon-list" aria-hidden="true" aria-label="Listenansicht"></span></button>
+
+                    <button id="openViewsBtn" type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#menuModal"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" aria-label="Ansichten wechseln"></span></button>
+
+                </div>
+                <div class="navbar-right" id="html5-badge">
+                    <img src="html5-badge.png" style="height: 3em;" />
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <iframe seamless id="webview"></iframe>
+
+    <div class="modal fade" id="menuModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Menü</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+
+                        <label for="setCalendarViewBtn">Ansichten:</label>
+                        <button name="setCalendarViewBtn" type="button" class="btn btn-default form-control setCalendarViewBtn"><span class="glyphicon glyphicon-calendar" aria-hidden="true" aria-label="Kalenderansicht"></span>Kalender</button>
+
+                        <button type="button" class="btn btn-default form-control setListViewBtn"><span class="glyphicon glyphicon-list" aria-hidden="true" aria-label="Listenansicht"></span>Liste</button>
+
+                        <hr />
+
+                        <button id="refreshClassList" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-refresh" aria-hidden="true" aria-label="Planbezeichnungen aktualisieren"></span>Planbez. aktualisieren</button>
+
+                        <button id="aboutBtn" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" aria-label="Über diese WebApp"></span>Über diese WebApp</button>
+                    </div>
+
+                    <div id="aboutContent" style="display: none;">
+                        <div style="float: left; background-color: rgb(51, 51, 51); padding: 1em; margin: 0.5em;">
+                            <img src="logo.png" />
+                        </div>
+                        Diese App wurde mithilfe diverse HTML5-Webtechnologien entwickelt. Darunter befinden sich folgende:
+
+                        <ul class="list-group" style="clear: left;">
+                            <li class="list-group-item">Local Storage</li>
+                            <li class="list-group-item">AJAX / XMLHttpRequest</li>
+                            <li class="list-group-item">Bootstrap</li>
+                            <li class="list-group-item">jQuery</li>
+                        </ul>
+
+                        <img src="html5-badge.png" /> <span class="glyphicon glyphicon-copyright-mark"></span> 2015 Maik Wöhl
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade classSelectionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Plan auswählen</h4>
+                </div>
+
+                <div class="modal-body container-fluid">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary form-control setBigPlanBtn"><span class="glyphicon glyphicon-home" aria-hidden="true" aria-label="Gesamtplan aufrufen"></span>&nbsp;Gesamtplan aufrufen</button>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="classListSelector">Einzelplan:</label>
+                                <select name="classListSelector" id="classListSelector" class="form-control">
+                                    <option value="1">TG13-1</option>
+                                    <option value="2">TG12-1</option>
+                                    <option value="3">TG11-1</option>
+                                    <option value="4">BITA-1</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-default makeFav" id="makeFavBig"><span class="glyphicon glyphicon-star makeFavGlyphiconStar" aria-hidden="true" aria-label="Aktuellen Plan de-favorisieren"></span><span class="glyphicon glyphicon-star-empty makeFavGlyphiconStarEmpty" aria-hidden="true" aria-label="Aktuellen Plan favorisieren"></span><span id="makeFavLabel"></span></button>
+                            </div>
+                        </div>
+                        <br />
+                        <label for="favListSelector">Aus Favoriten auswählen:</label>
+                        <select name="favListSelector" id="favListSelector" class="form-control" placeholder="Auswählen">
+                            <option value="0">Fav 1</option>
+                            <option value="1">Fav 2</option>
+                            <option value="2">Fav 3</option>
+                        </select>
+
+
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="setPlanBtn" style="display: none;">Aufrufen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="getStartedModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Erste Schritte</h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>Willkommen in der Vertretungsplan-WebApp. Diese wurde mithilfe von HTML5 realisiert.</p>
+
+                    <p>Folgende Schaltflächen kannst du hier finden:</p>
+
+                    <table class="table">
+                        <tr>
+                            <td><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></td>
+                            <td>Die Kalenderwoche eine Woche zurückschalten.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></td>
+                            <td>Die Kalenderwoche eine Woche vorschalten.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-time" aria-hidden="true"></span></td>
+                            <td>Die aktuelle Kalenderwoche.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></td>
+                            <td>Ansichten anzeigen/wechseln und auf die Einstellungen zugreifen.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></td>
+                            <td>Planauswahlmenü öffnen.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></td>
+                            <td>Kalenderansicht öffnen. <span class="label label-info">Desktop</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-list" aria-hidden="true"></span></td>
+                            <td>Listenansicht öffnen. <span class="label label-info">Desktop</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-home" aria-hidden="true"></span></td>
+                            <td>Gesamtplan öffnen. <span class="label label-info">Desktop</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></td>
+                            <td>Planbezeichnungen aktualisieren.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                            <td>Hinweise und Informationen zu dieser WebApp.</td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="glyphicon glyphicon-star" aria-hidden="true"></span></td>
+                            <td>Aktueller Plan ist zu Favoriten hinzugefügt.</td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></td>
+                            <td>Aktueller Plan kann zu den Favoriten hinzugefügt werden.</td>
+                        </tr>
+                    </table>
+
+                    <span class="label label-info">Desktop</span> Alle Elemente mit nebenstehendem Symbol werden nur bei genügend Platz in der Menüleiste angezeigt. Diese Funktionen sind weiterhin über das Menü bzw. dem Planauswahlmenü verfügbar.
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="getStartedBtn" data-dismiss="modal">Anfangen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

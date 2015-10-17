@@ -1,0 +1,81 @@
+body {
+    padding-top: 50px;
+    overflow-y: hidden;
+}
+
+#webview {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#views-popover {
+    display: none;
+}
+
+span.glyphicon {
+    margin-right: 0.2em;
+}
+
+#html5-badge {
+    height: 2em;
+    padding-top: 0.3em;
+}
+
+#makeFavBig {
+    margin-top: 1.7em;
+}
+
+@media (max-width: 780px) {
+    .navbar-header,
+    #html5-badge {
+        display: none;
+    }
+}
+
+@media (max-width: 550px) {
+    #bigPlanMenu {
+        display: none;
+    }
+}
+
+@media (max-width: 500px) {
+    #bigPlanMenu,
+    #setCalendarMenu,
+    #setListMenu {
+        display: none;
+    }
+}
+
+@media (max-width: 450px) {
+    #bigPlanMenu,
+    #setCalendarMenu,
+    #setListMenu,
+    #makeFavSmall {
+        display: none;
+    }
+}
+
+@media (min-width: 380px) {
+    #setClassBtn:after {
+        content: "Plan auswählen";
+    }
+}
+
+@media (max-width: 275px) {
+    #cwDisplayBtn {
+        display: none;
+    }
+}
+
+@media (max-width: 380px) {
+    #setClassBtn:after {
+        content: "Plan";
+    }
+}
+
+@media (max-width: 300px) {
+    #setClassBtn:after {
+        content: "";
+    }
+}
