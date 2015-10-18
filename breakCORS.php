@@ -15,7 +15,27 @@ function get_data($url) {
 }
 
 //$content = get_data("http://www.bbs-lingen-gf.de/homepage/vertretungsplan/schueler/Vertretungen-Klassen/frames/navbar.htm");
-$content = file_get_contents("http://www.bbs-lingen-gf.de/homepage/vertretungsplan/schueler/Vertretungen-Klassen/frames/navbar.htm");
+if ($_POST["mode"] == "teacher") {
+	// Get Contents with HTTP Post Header
+	$username = $_POST["username"];
+	$password = $_POST["password"];
+	$opts = array('http' =>
+		array(
+			'method' => 'POST',
+			'header' => "Content-Type: text/xml\r\n".
+				"Authorization Basic ".base64_encode($username.":".$password)."\r\n",
+			'content' => "",
+			'timeout' => 60
+		)
+	);
+	
+	$context = stream_context_create($opts);
+	$content = file_get_contents("http://www.bbs-lingen-gf.de/homepage/vertretungsplan/lehrer/Vertretungen-Lehrer/frames/navbar.htm", false, $context);
+}
+else {
+	$content = file_get_contents("http://www.bbs-lingen-gf.de/homepage/vertretungsplan/schueler/Vertretungen-Klassen/frames/navbar.htm");	
+}
+
 
 echo utf8_encode($content);
 ?>

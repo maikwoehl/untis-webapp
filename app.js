@@ -16,6 +16,7 @@ function Vertretungsplan(webViewElementID) {
 
     this.CW = (new Date()).getWeekNumber();
     this.genericPlanStart = "http://www.bbs-lingen-gf.de/homepage/vertretungsplan/schueler/Vertretungen-Klassen/";
+    this.genericTeacherPlanStart = "http://www.bbs-lingen-gf.de/homepage/vertretungsplan/lehrer/Vertretungen-Lehrer/";
     this.bigPlanEnding = "w/w00000.htm";
 
     if (localStorage.getItem("type") == null) {
@@ -25,7 +26,10 @@ function Vertretungsplan(webViewElementID) {
     }
 
     this.classList = [];
+    this.teacherList = [];
+    this.roomList = [];
     this.rawData = "";
+    this.teacherMode = false;
 }
 
 Vertretungsplan.prototype = {
@@ -37,13 +41,25 @@ Vertretungsplan.prototype = {
 
     navigate: function () {
         var navLink = "";
-        if (this.currentType === "bigplan") {
-            //localStorage.removeItem("classID");
-            navLink = this.genericPlanStart + this.CW + "/" + this.bigPlanEnding;
-        } else if (this.currentType === "calendar") {
-            navLink = this.genericPlanStart + this.CW + "/c/c" + this.parseClassID() + ".htm";
-        } else if (this.currentType === "list") {
-            navLink = this.genericPlanStart + this.CW + "/w/w" + this.parseClassID() + ".htm";
+
+        if (!this.teacherMode) {
+            if (this.currentType === "bigplan") {
+                //localStorage.removeItem("classID");
+                navLink = this.genericPlanStart + this.CW + "/" + this.bigPlanEnding;
+            } else if (this.currentType === "calendar") {
+                navLink = this.genericPlanStart + this.CW + "/c/c" + this.parseClassID() + ".htm";
+            } else if (this.currentType === "list") {
+                navLink = this.genericPlanStart + this.CW + "/w/w" + this.parseClassID() + ".htm";
+            }
+        } else {
+            if (this.currentType === "bigplan") {
+                //localStorage.removeItem("classID");
+                navLink = this.genericTeacherPlanStart + this.CW + "/" + this.bigPlanEnding;
+            } else if (this.currentType === "calendar") {
+                navLink = this.genericTeacherPlanStart + this.CW + "/t/t" + this.parseClassID() + ".htm";
+            } else if (this.currentType === "list") {
+                navLink = this.genericTeacherPlanStart + this.CW + "/v/v" + this.parseClassID() + ".htm";
+            }
         }
 
         document.getElementById(this.webView).setAttribute("src", navLink);
@@ -54,10 +70,41 @@ Vertretungsplan.prototype = {
     },
 
     retrieveClassList: function () {
-        $.get("http://home.pierewoehl.de:8080/breakCORS.php", this.parseRawData);
+        if (!this.teacherMode) {
+            $.get("http://home.pierewoehl.de:8080/breakCORS.php", this.parseRawData);    
+        } else {
+            /* Access with POST */
+            var username = prompt("Benutzername:");
+            var password = prompt("Passwort");
+            var authData = {
+                mode: "teacher",
+                username: username,
+                password: password
+            };
+            
+            $.ajax({
+                url: "http://home.pierewoehl.de:8080/breakCORS.php",
+                type: "POST",
+                data: authData,
+                success: this.parseRawData
+            });
+        }
     },
 
     parseRawData: function (newRawData) {
+        // Cut top 
+        var workingData =newRawData.slice(this.rawData.search("classes"));
+
+        // Cut out classes
+        workingData = workingData.slice(workingData.indexOf("["), workingData.indexOf("]") + 1);
+
+        this.classList = JSON.parse(workingData);
+
+        localStorage.setItem("classList", JSON.stringify(this.classList));
+    },
+    
+    parseTeacherRawData: function (newRawData)
+    {
         this.rawData = newRawData;
 
         // Cut top 
@@ -72,7 +119,6 @@ Vertretungsplan.prototype = {
     },
 
     getClassList: function () {
-
         return JSON.parse(localStorage.getItem("classList"));
     },
 

@@ -50,6 +50,22 @@
                 } else {
                     vp.navigate();
                 }
+                
+                /* Check if favorite class list exists in LocalStorage */
+                if (localStorage.getItem("classFavList") == null) {
+                    localStorage.setItem("classFavList", JSON.stringify([]));
+                    refreshFavListSelector();
+                } else {
+                    refreshFavListSelector();
+                }
+                
+                /* Check if favorite class list exists in LocalStorage */
+                if (localStorage.getItem("teacherFavList") == null) {
+                    localStorage.setItem("teacherFavList", JSON.stringify([]));
+                    refreshFavListSelector();
+                } else {
+                    refreshFavListSelector();
+                }
             }
 
             /* Event Handler */
@@ -159,7 +175,13 @@
                 {
                     /* Refresh the favorite list selector */
                     function refreshFavListSelector() {
-                        var classFavList = JSON.parse(localStorage.getItem("classFavList"));
+                        var classFavList;
+                        if (!vp.teacherMode) {
+                            classFavList = JSON.parse(localStorage.getItem("classFavList"));
+                        } else {
+                            classFavList = JSON.parse(localStorage.getItem("teacherFavList"));
+                        }
+                        
                         $('#favListSelector').empty();
                         var classList = vp.getClassList();
         
@@ -191,15 +213,7 @@
                             $('.makeFavGlyphiconStarEmpty').show();
                         }
                     }
-        
-                    /* Check if favorite class list exists in LocalStorage */
-                    if (localStorage.getItem("classFavList") == null) {
-                        localStorage.setItem("classFavList", JSON.stringify(classFavList));
-                        refreshFavListSelector();
-                    } else {
-                        refreshFavListSelector();
-                    }
-        
+                          
                     /* Add a new favorite to favorite list */
                     $('.makeFav').click(function () {
                         isAlreadyFav = false;
@@ -215,12 +229,22 @@
         
                         if (!isAlreadyFav) {
                             classFavList[classFavList.length] = vp.classID;
-                            localStorage.setItem("classFavList", JSON.stringify(classFavList));
-        
+                                
+                            if (!vp.teacherMode) {
+                                localStorage.setItem("classFavList", JSON.stringify(classFavList));
+                            } else {
+                                localStorage.setItem("teacherFavList", JSON.stringify(classFavList));
+                            }
+            
                             refreshFavListSelector();
                         } else {
                             classFavList.splice(classID, 1);
-                            localStorage.setItem("classFavList", JSON.stringify(classFavList));
+                            
+                            if (!vp.teacherMode) {
+                                localStorage.setItem("classFavList", JSON.stringify(classFavList));
+                            } else {
+                                localStorage.setItem("teacherFavList", JSON.stringify(classFavList));
+                            }
         
                             refreshFavListSelector();
                             $('#makeFavLabel').html("Favorisieren");
@@ -243,7 +267,8 @@
         
                     /* Change event handler of favorite selection (auto-change plan) */
                     $('#favListSelector').change(function () {
-                        vp.setClassID($('#favListSelector').val());
+                        if ($('#favListSelector').val() != 0)
+                            vp.setClassID($('#favListSelector').val());
         
                         if (vp.currentType === "bigplan") {
                             vp.currentType = "calendar";
@@ -297,6 +322,10 @@
                     <button id="setClassBtn" type="button" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-pushpin" aria-hidden="true" aria-label="Plan zur Anzeige auswählen"></span>
                     </button>
                     <button type="button" class="btn btn-default navbar-btn makeFav" id="makeFavSmall"><span class="glyphicon glyphicon-star makeFavGlyphiconStar" aria-hidden="true" aria-label="Aktuellen Plan de-favorisieren"></span><span class="glyphicon glyphicon-star-empty makeFavGlyphiconStarEmpty" aria-hidden="true" aria-label="Aktuellen Plan favorisieren"></span></button>
+                    
+                    <button type="button" id="activateTeacherMode" class="btn btn-default navbar-btn" disabled data-toggle="button" aria-pressed="false" autocomplete="off">
+                        <span class="glyphicon glyphicon-lock" aria-hidden="true" aria-label="In den Lehrermodus wechseln"></span>
+                    </button>
 
                     <button id="bigPlanMenu" type="button" class="btn btn-default navbar-btn setBigPlanBtn"><span class="glyphicon glyphicon-home" aria-hidden="true" aria-label="Gesamtplan aufrufen"></span></button>
 
@@ -472,6 +501,10 @@
                         <tr>
                             <td><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></td>
                             <td>Aktueller Plan kann zu den Favoriten hinzugefügt werden.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></td>
+                            <td>Lehrermodus aktivieren <span class="label label-success">Coming soon</span></td>
                         </tr>
                     </table>
 

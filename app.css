@@ -33,6 +33,12 @@ span.glyphicon {
     }
 }
 
+@media (max-width: 575px) {
+    #activateTeacherMode {
+        display: none;
+    }
+}
+
 @media (max-width: 550px) {
     #bigPlanMenu {
         display: none;
