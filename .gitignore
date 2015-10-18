@@ -15,6 +15,11 @@ local.properties
 .classpath
 .settings/
 .loadpath
+.vscode/
+nodeDevServer.js
+node_modules/
+typings/
+
 
 # External tool builders
 .externalToolBuilders/
