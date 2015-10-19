@@ -1,4 +1,4 @@
-/// <reference path="typings/jquery/jquery.d.ts" />
+/// <reference path="../jquery/jquery.d.ts" />
 declare function getWeekNumber(): number;
 declare class VertretungsplanTP {
     webView: string;
