@@ -90,7 +90,7 @@
                     /* Show Event for class selection modal dialog */
                     $('.classSelectionModal').on("show.bs.modal", function (e) {
                         $('#classListSelector').empty();
-                        classList = vp.getClassList();
+                        classList = vp.getClassList("classes");
         
                         for (i = 0; i < classList.length; i++) {
                             $('#classListSelector').append('<option value="' + 
@@ -169,6 +169,30 @@
                         vp.navigate();
                         $('#menuModal').modal("hide");
                     });
+                    
+                    $('#activateTeacherMode').click(function() {
+                        if (!vp.teacherMode) {
+                            vp.teacherMode = true;
+                            $('.authModal').modal("show");
+                        } else {
+                            vp.teacherMode = false;
+                        }
+                    });
+                    
+                    $('#authLoginCancel').click(function() {
+                        vp.teacherMode = false;
+                        $('#activateTeacherMode').button("toggle");
+                        $('.authModal').modal("hide");
+                    });
+                    
+                    $('#authLogin').click(function() {
+                        $('#wrongCredentialsAlert').hide();
+                        
+                        vp.username = $('#authUsername').val();
+                        vp.password = $('#authPassword').val();
+                        
+                        vp.retrieveClassList();
+                    });
                 }
     
                 /* Favorites Management */
@@ -183,7 +207,7 @@
                         }
                         
                         $('#favListSelector').empty();
-                        var classList = vp.getClassList();
+                        var classList = vp.getClassList("classes");
         
                         var isFaved = false;
         
@@ -291,7 +315,7 @@
                     /* Show about content */
                     $('#aboutBtn').click(function () {
                         $('#aboutContent').show();
-                    });   
+                    });
                 }
             }
         });
@@ -323,7 +347,7 @@
                     </button>
                     <button type="button" class="btn btn-default navbar-btn makeFav" id="makeFavSmall"><span class="glyphicon glyphicon-star makeFavGlyphiconStar" aria-hidden="true" aria-label="Aktuellen Plan de-favorisieren"></span><span class="glyphicon glyphicon-star-empty makeFavGlyphiconStarEmpty" aria-hidden="true" aria-label="Aktuellen Plan favorisieren"></span></button>
                     
-                    <button type="button" id="activateTeacherMode" class="btn btn-default navbar-btn" disabled data-toggle="button" aria-pressed="false" autocomplete="off">
+                    <button type="button" id="activateTeacherMode" class="btn btn-default navbar-btn" data-toggle="button" aria-pressed="false" autocomplete="off">
                         <span class="glyphicon glyphicon-lock" aria-hidden="true" aria-label="In den Lehrermodus wechseln"></span>
                     </button>
 
@@ -434,6 +458,52 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
                     <button type="button" class="btn btn-primary" id="setPlanBtn" style="display: none;">Aufrufen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade authModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+                    <h4 class="modal-title" id="myModalLabel">Zugangsdaten erforderlich</h4>
+                </div>
+
+                <div class="modal-body container-fluid">
+                    <p>Die Listen der Lehrer sind geschützt. Bitte geben Sie hier die erforderlichen Zugangsdaten an.</p>
+                    <p>
+                        Diese werden nur für den Moment der Plan-Aktualisierung benötigt und nach erfolgreichem Herunterladen der Daten
+                        wieder gelöscht.
+                    </p>
+                    
+                    <div class="alert alert-danger collapse" role="alert" id="wrongCredentialsAlert">
+                        <span class="glyphicon glyphicon-alert"></span>
+                        Die Zugangsdaten scheinen nicht zu stimmen. Versuchen Sie es erneut.
+                    </div>
+                    
+                    <div class="form-group">
+                        
+                        <label for="username">Benutzername:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon" id="userAddon"><span class="glyphicon glyphicon-user"></span></span>
+                            <input type="text" name="username" id="authUsername" class="form-control" placeholder="Hans" aria-describedby="userAddon" />
+                        </div>
+                        
+                        
+                        <label for="password">Passwort:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon" id="pwdAddon"><span class="glyphicon glyphicon-lock"></span></span>
+                            <input type="password" name="password" id="authPassword" class="form-control" aria-describedby="pwdAddon" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="authLoginCancel">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="authLogin">Einloggen</button>
                 </div>
             </div>
         </div>

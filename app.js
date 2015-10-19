@@ -28,8 +28,9 @@ function Vertretungsplan(webViewElementID) {
     this.classList = [];
     this.teacherList = [];
     this.roomList = [];
-    this.rawData = "";
     this.teacherMode = false;
+    this.username = "";
+    this.password = "";
 }
 
 Vertretungsplan.prototype = {
@@ -71,29 +72,37 @@ Vertretungsplan.prototype = {
 
     retrieveClassList: function () {
         if (!this.teacherMode) {
-            $.get("http://home.pierewoehl.de:8080/breakCORS.php", this.parseRawData);    
+            $.get("http://testapp-maikw.rhcloud.com/breakCORS/student", this.parseRawData);    
         } else {
             /* Access with POST */
-            var username = prompt("Benutzername:");
-            var password = prompt("Passwort");
+            
             var authData = {
-                mode: "teacher",
-                username: username,
-                password: password
+                username: this.username,
+                password: this.password
             };
             
+            function errorHandler(jqXHR, errorStatus, errorHttpCode)
+            {
+                if (errorHttpCode === "Unauthorized")
+                {
+                    $('#wrongCredentialsAlert').show();
+                }
+            }
+            
             $.ajax({
-                url: "http://home.pierewoehl.de:8080/breakCORS.php",
+                //url: "http://testapp-maikw.rhcloud.com/breakCORS/teacher",
+                url: "http://127.0.0.1:8888/breakCORS/teacher",
                 type: "POST",
                 data: authData,
-                success: this.parseRawData
+                success: this.parseTeacherRawData,
+                error: errorHandler
             });
         }
     },
 
     parseRawData: function (newRawData) {
         // Cut top 
-        var workingData =newRawData.slice(this.rawData.search("classes"));
+        var workingData = newRawData.slice(newRawData.search("classes"));
 
         // Cut out classes
         workingData = workingData.slice(workingData.indexOf("["), workingData.indexOf("]") + 1);
@@ -103,10 +112,13 @@ Vertretungsplan.prototype = {
         localStorage.setItem("classList", JSON.stringify(this.classList));
     },
     
-    parseTeacherRawData: function (newRawData)
-    {
+    parseTeacherRawData: function (newRawData) {
+        this.username = "";
+        this.password = "";
+        
         this.rawData = newRawData;
 
+        // TODO: Get credentials to test this code
         // Cut top 
         var workingData = this.rawData.slice(this.rawData.search("classes"));
 
@@ -115,11 +127,22 @@ Vertretungsplan.prototype = {
 
         this.classList = JSON.parse(workingData);
 
-        localStorage.setItem("classList", JSON.stringify(this.classList));
+        // TODO: Add roomList
+        localStorage.setItem("teacherList", JSON.stringify(this.classList));
     },
 
-    getClassList: function () {
-        return JSON.parse(localStorage.getItem("classList"));
+    getClassList: function (listType) {
+        
+        if (listType === "classes")
+        {
+            return JSON.parse(localStorage.getItem("classList"));    
+        } else if (listType === "teachers")
+        {
+            return JSON.parse(localStorage.getItem("teacherList"));
+        } else if (listType === "rooms") {
+            return JSON.parse(localStorage.getItem("roomList"));
+        }
+        
     },
 
     setClassID: function (id) {
