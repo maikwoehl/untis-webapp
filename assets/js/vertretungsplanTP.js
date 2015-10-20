@@ -1,4 +1,7 @@
-/// <reference path="../../../typings/jquery/jquery.d.ts" />
+/// <reference path="../../typings/jquery/jquery.d.ts" />
+/**
+ * VertretungsplanTP is a TypeScript library which allows the programmer to abstract the content from the model of the UNTIS web plans and from the model of the webapp itself.
+ */
 /**
  * Calculates the calendar week with Date objects.
  */
@@ -11,18 +14,13 @@ function getWeekNumber() {
     d2 = new Date(d.getFullYear(), 0, 1);
     return Math.ceil((((d - d2) / 8.64e7) + 1) / 7);
 }
-// Date.prototype.getWeekNumber = function() {
-//     var d = new Date(+this);
-//     d.setHours(0, 0, 0);
-//     d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-//     return Math.ceil((((d - new Date(d.getFullYear(), 0, 1)) / 8.64e7) + 1) / 7);
-// };
 /**
  * Library to interface with UNTIS Web Plans.
  */
 var VertretungsplanTP = (function () {
     /**
      * VetretungsplanTP needs one parameter for the constructor: The ID of the iFrame that will show up all content.
+     * @param webViewElementID DOM-ID of the iFrame Element where plans are loaded.
      */
     function VertretungsplanTP(webViewElementID) {
         this.webViewElementID = webViewElementID;
@@ -52,6 +50,7 @@ var VertretungsplanTP = (function () {
     }
     /**
      * Sets the view type of the plan.
+     * @param type The type of the plan that will show up.
      */
     VertretungsplanTP.prototype.setType = function (type) {
         this.currentType = type;
@@ -90,6 +89,7 @@ var VertretungsplanTP = (function () {
     };
     /**
      * Returns the current calendar week based on calculations made inside getWeekNumber().
+     * @returns current Calendar week
      */
     VertretungsplanTP.prototype.getCurrentCW = function () {
         return getWeekNumber();
@@ -124,6 +124,7 @@ var VertretungsplanTP = (function () {
     };
     /**
      * Parse the whole web page that is retrieved from the UNTIS web plans.
+     * @param newRawData Represents the html of the whole page that is retrieved with retrieveClassList from the API-Server
      */
     VertretungsplanTP.prototype.parseRawData = function (newRawData) {
         // Cut top 
@@ -135,6 +136,7 @@ var VertretungsplanTP = (function () {
     };
     /**
      * Parse the whole web page that is retrieved from the UNTIS teacher web plans.
+     * @param newRawData  epresents the html of the whole page that is retrieved with retrieveClassList from the API-Server
      */
     VertretungsplanTP.prototype.parseTeacherRawData = function (newRawData) {
         this.username = "";
@@ -150,6 +152,7 @@ var VertretungsplanTP = (function () {
     };
     /**
      * Gets the classlist out of localStorage.
+     * @param listType This parameter tells the getClassList() method what list should be loaded out of storage.
      */
     VertretungsplanTP.prototype.getClassList = function (listType) {
         if (listType === "classes") {
@@ -164,13 +167,15 @@ var VertretungsplanTP = (function () {
     };
     /**
      * Sets the class ID property.
+     * @param id The new class ID which should saved into the class property.
      */
     VertretungsplanTP.prototype.setClassID = function (id) {
         this.classID = id;
         localStorage.setItem("classID", this.classID.toString());
     };
     /**
-     * Parse the class ID property and returns a string with leading zeros to use in the URI.
+     * Parse the class ID property and returns a string with leading zeros for use in the URI.
+     * @returns A string like `00273` that addresses the specified class in the URI path.
      */
     VertretungsplanTP.prototype.parseClassID = function () {
         var classID = this.classID;

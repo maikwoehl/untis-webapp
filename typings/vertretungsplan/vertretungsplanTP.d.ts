@@ -1,4 +1,7 @@
-/// <reference path="../../../typings/jquery/jquery.d.ts" />
+/// <reference path="../jquery/jquery.d.ts" />
+/**
+ * VertretungsplanTP is a TypeScript library which allows the programmer to abstract the content from the model of the UNTIS web plans and from the model of the webapp itself.
+ */
 /**
  * Calculates the calendar week with Date objects.
  */
@@ -62,10 +65,12 @@ declare class VertretungsplanTP {
     password: string;
     /**
      * VetretungsplanTP needs one parameter for the constructor: The ID of the iFrame that will show up all content.
+     * @param webViewElementID DOM-ID of the iFrame Element where plans are loaded.
      */
     constructor(webViewElementID: string);
     /**
      * Sets the view type of the plan.
+     * @param type The type of the plan that will show up.
      */
     setType(type: string): void;
     /**
@@ -74,6 +79,7 @@ declare class VertretungsplanTP {
     navigate(): void;
     /**
      * Returns the current calendar week based on calculations made inside getWeekNumber().
+     * @returns current Calendar week
      */
     getCurrentCW(): number;
     /**
@@ -82,22 +88,27 @@ declare class VertretungsplanTP {
     retrieveClassList(): void;
     /**
      * Parse the whole web page that is retrieved from the UNTIS web plans.
+     * @param newRawData Represents the html of the whole page that is retrieved with retrieveClassList from the API-Server
      */
-    parseRawData(newRawData: any): void;
+    parseRawData(newRawData: string): void;
     /**
      * Parse the whole web page that is retrieved from the UNTIS teacher web plans.
+     * @param newRawData  epresents the html of the whole page that is retrieved with retrieveClassList from the API-Server
      */
     parseTeacherRawData(newRawData: string): void;
     /**
      * Gets the classlist out of localStorage.
+     * @param listType This parameter tells the getClassList() method what list should be loaded out of storage.
      */
     getClassList(listType: string): void;
     /**
      * Sets the class ID property.
+     * @param id The new class ID which should saved into the class property.
      */
     setClassID(id: number): void;
     /**
-     * Parse the class ID property and returns a string with leading zeros to use in the URI.
+     * Parse the class ID property and returns a string with leading zeros for use in the URI.
+     * @returns A string like `00273` that addresses the specified class in the URI path.
      */
     parseClassID(): string;
 }

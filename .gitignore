@@ -225,4 +225,3 @@ pip-log.txt
 nodeDevServer.js
 node_modules/
 typings/node
-typings/jquery
