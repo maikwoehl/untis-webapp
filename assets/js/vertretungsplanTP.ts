@@ -234,8 +234,9 @@ class VertretungsplanTP {
     /**
      * Gets the classlist out of localStorage.
      * @param listType This parameter tells the getClassList() method what list should be loaded out of storage.
+     * @returns list of classes
      */    
-    getClassList(listType: string): void {
+    getClassList(listType: string): string[] {
         if (listType === "classes")
         {
             return JSON.parse(localStorage.getItem("classList"));    

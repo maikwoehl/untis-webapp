@@ -153,6 +153,7 @@ var VertretungsplanTP = (function () {
     /**
      * Gets the classlist out of localStorage.
      * @param listType This parameter tells the getClassList() method what list should be loaded out of storage.
+     * @returns list of classes
      */
     VertretungsplanTP.prototype.getClassList = function (listType) {
         if (listType === "classes") {

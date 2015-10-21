@@ -5,326 +5,32 @@
     <title>TuG Vertretungen</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular.min.js"></script>
 
-    <!-- WebApp Stylesheet -->
+    <!-- [View] Language files -->
+    <script type="text/javascript" src="lang/de.js"></script>
+
+    <!-- [View] WebApp Stylesheet -->
     <link rel="stylesheet" type="text/css" href="assets/css/app.css" />
-    <!-- WebApp JavaScript Library -->
-    <!-- <script type="text/javascript" src="assets/js/vertretungsplanTP.js"></script> -->
-    <script type="text/javascript" src="http://testapp-maikw.rhcloud.com/api/untis-webapp/vertretungsplanTP.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            /* Initialization */
-            {
-                /* Resize WebView to fit screen */
-                $('#webview').css("height", window.innerHeight - 50);
+    <!-- [Model] WebApp JavaScript Library -->
+    <script type="text/javascript" src="assets/js/vertretungsplanTP.js"></script>
     
-                /* Create new VP-Object */
-                //var vp = new Vertretungsplan("webview");
-                var vp = new VertretungsplanTP("webview");
-                
-                /* Set CW */
-                $('#cwDisplay').html(vp.CW);
-                
-                /* Check if there is a classList. If not, download it */
-                if (localStorage.getItem("classList") == null) {
-                    vp.retrieveClassList();
-                }
-                
-                /* Global Variable for Favorite List */
-                var classFavList = [];
+    <!-- [Controller] WebApp jQuery Event Handlers -->
+    <script type="text/javascript" src="assets/js/app.js"></script>
     
-                /* First visit dialog */
-                if (localStorage.getItem("first-visit") == null) {
-                    $('#getStartedModal').modal("show");
-                }
+    <!-- [View] WebApp Angular Templating -->
+    <script type="text/javascript" src="assets/js/template.js"></script>
     
-                /* Check if there is a classID in LocalStorage */
-                if (localStorage.getItem("classID") == null) {
-                    vp.setType("bigplan");
-                    vp.navigate();
-                } else {
-                    vp.navigate();
-                }
-                
-                /* Check if favorite class list exists in LocalStorage */
-                if (localStorage.getItem("classFavList") == null) {
-                    localStorage.setItem("classFavList", JSON.stringify([]));
-                    refreshFavListSelector();
-                } else {
-                    refreshFavListSelector();
-                }
-                
-                /* Check if favorite class list exists in LocalStorage */
-                if (localStorage.getItem("teacherFavList") == null) {
-                    localStorage.setItem("teacherFavList", JSON.stringify([]));
-                    refreshFavListSelector();
-                } else {
-                    refreshFavListSelector();
-                }
-            }
-
-            /* Event Handler */
-            {
-                /* If Window was resized, adjust WebView-Height */
-                $(window).resize(function () {
-                    $('#webview').css("height", window.innerHeight - 50);
-                });
-                
-                /* Accept get started message */
-                $('#getStartedBtn').click(function (e) {
-                    localStorage.setItem("first-visit", "false");
-                });
-                
-                /* Choose plan */
-                {
-                    $('#setClassBtn').click(function () {
-                        refreshFavListSelector();
-                        $('.classSelectionModal').modal('show');
-                    });
-            
-                    /* Show Event for class selection modal dialog */
-                    $('.classSelectionModal').on("show.bs.modal", function (e) {
-                        $('#classListSelector').empty();
-                        classList = vp.getClassList("classes");
-        
-                        for (i = 0; i < classList.length; i++) {
-                            $('#classListSelector').append('<option value="' + 
-                            (i + 1) + 
-                            '">' + 
-                            classList[i] + 
-                            '</option>');
-                        }
-        
-                        if (localStorage.getItem("classID") != null) {
-                            $('#classListSelector option[value="' + vp.classID.toString() + '"]')
-                                .attr("selected", true);
-                        }
-                    });
-                    
-                    /* Switch to Big Plan */
-                    $('.setBigPlanBtn').click(function () {
-                        //$('#webview').attr("src", vp.getBigPlanURL());
-                        vp.setType("bigplan");
-                        vp.navigate();
-                        $('.classSelectionModal').modal('hide');
-                    });
-                    
-                    /* Select the BIG plan with all classes */
-                    $('#setPlanBtn').click(function () {
-                        vp.setClassID($('#classListSelector').val());
-        
-                        if (vp.currentType === "bigplan") {
-                            vp.currentType = "calendar";
-                        }
-        
-                        vp.navigate();
-                        $('.classSelectionModal').modal("hide");
-                    });
-                }
-                
-                /* CW management */
-                {
-                    /* Switch CW to previous week */
-                    $('#prevWeekBtn').click(function () {
-                        if (vp.getCurrentCW() < vp.CW) {
-                            vp.CW = vp.CW - 1;
-                            $('#cwDisplay').html(vp.CW);
-                            vp.navigate();
-                        }
-        
-                        /* Disable button when the next step would go to the past */
-                        if (vp.getCurrentCW() == vp.CW) {
-                            document.getElementById("prevWeekBtn").setAttribute("disabled", "disabled");
-                        }
-                    });
-        
-                    /* Switch CW to next week */
-                    $('#nextWeekBtn').click(function () {
-                        vp.CW = vp.CW + 1;
-                        $('#cwDisplay').html(vp.CW);
-                        vp.navigate();
-        
-                        /* Enable button */
-                        $('#prevWeekBtn').removeAttr("disabled");
-                    });
-                }
     
-                /* View Management */
-                {
-                    /* Set viewport to calendar mode */
-                    $('.setCalendarViewBtn').click(function () {
-                        vp.setType("calendar");
-                        vp.navigate();
-                        $('#menuModal').modal("hide");
-                    });
-                    
-                    /* Set viewport to list mode */
-                    $('.setListViewBtn').click(function () {
-                        vp.setType("list");
-                        vp.navigate();
-                        $('#menuModal').modal("hide");
-                    });
-                    
-                    $('#activateTeacherMode').click(function() {
-                        if (!vp.teacherMode) {
-                            vp.teacherMode = true;
-                            $('.authModal').modal("show");
-                        } else {
-                            vp.teacherMode = false;
-                        }
-                    });
-                    
-                    $('#authLoginCancel').click(function() {
-                        vp.teacherMode = false;
-                        $('#activateTeacherMode').button("toggle");
-                        $('.authModal').modal("hide");
-                    });
-                    
-                    $('#authLogin').click(function() {
-                        $('#wrongCredentialsAlert').hide();
-                        
-                        vp.username = $('#authUsername').val();
-                        vp.password = $('#authPassword').val();
-                        
-                        vp.retrieveClassList();
-                    });
-                }
-    
-                /* Favorites Management */
-                {
-                    /* Refresh the favorite list selector */
-                    function refreshFavListSelector() {
-                        var classFavList;
-                        if (!vp.teacherMode) {
-                            classFavList = JSON.parse(localStorage.getItem("classFavList"));
-                        } else {
-                            classFavList = JSON.parse(localStorage.getItem("teacherFavList"));
-                        }
-                        
-                        $('#favListSelector').empty();
-                        var classList = vp.getClassList("classes");
-        
-                        var isFaved = false;
-        
-                        $('#favListSelector').append('<option value="0">Bitte auswählen</option>');
-        
-                        for (i = 0; i < classFavList.length; i++) {
-        
-                            if (classFavList[i] == vp.classID) {
-                                isFaved = true;
-                            }
-        
-                            $('#favListSelector').append('<option value="' + 
-                                classFavList[i] + 
-                                '">' + 
-                                classList[classFavList[i] - 1] + 
-                                '</option>');
-                        }
-        
-                        if (isFaved) {
-                            $('#makeFavLabel').html("De-Favorisieren");
-                            $('.makeFavGlyphiconStar').show();
-                            $('.makeFavGlyphiconStarEmpty').hide();
-        
-                        } else {
-                            $('#makeFavLabel').html("Favorisieren");
-                            $('.makeFavGlyphiconStar').hide();
-                            $('.makeFavGlyphiconStarEmpty').show();
-                        }
-                    }
-                          
-                    /* Add a new favorite to favorite list */
-                    $('.makeFav').click(function () {
-                        isAlreadyFav = false;
-                        classID = null;
-        
-                        for (i = 0; i < classFavList.length; i++) {
-                            if (classFavList[i] == vp.classID) {
-                                isAlreadyFav = true;
-                                classID = i;
-                                break;
-                            }
-                        }
-        
-                        if (!isAlreadyFav) {
-                            classFavList[classFavList.length] = vp.classID;
-                                
-                            if (!vp.teacherMode) {
-                                localStorage.setItem("classFavList", JSON.stringify(classFavList));
-                            } else {
-                                localStorage.setItem("teacherFavList", JSON.stringify(classFavList));
-                            }
-            
-                            refreshFavListSelector();
-                        } else {
-                            classFavList.splice(classID, 1);
-                            
-                            if (!vp.teacherMode) {
-                                localStorage.setItem("classFavList", JSON.stringify(classFavList));
-                            } else {
-                                localStorage.setItem("teacherFavList", JSON.stringify(classFavList));
-                            }
-        
-                            refreshFavListSelector();
-                            $('#makeFavLabel').html("Favorisieren");
-                            $('.makeFavGlyphiconStar').hide();
-                            $('.makeFavGlyphiconStarEmpty').show();
-                        }
-                    });
-        
-                    /* Change event handler of class selection (auto-change plan) */
-                    $('#classListSelector').change(function () {
-                        vp.setClassID($('#classListSelector').val());
-        
-                        if (vp.currentType === "bigplan") {
-                            vp.currentType = "calendar";
-                        }
-        
-                        vp.navigate();
-                        $('.classSelectionModal').modal("hide");
-                    });
-        
-                    /* Change event handler of favorite selection (auto-change plan) */
-                    $('#favListSelector').change(function () {
-                        if ($('#favListSelector').val() != 0)
-                            vp.setClassID($('#favListSelector').val());
-        
-                        if (vp.currentType === "bigplan") {
-                            vp.currentType = "calendar";
-                        }
-        
-                        vp.navigate();
-                        $('.classSelectionModal').modal("hide");
-        
-                    });
-                }
-    
-                /* Menu event handlers */
-                {
-                    /* Refresh the class list / download a new version of classlist */
-                    $('#refreshClassList').click(function () {
-                        vp.retrieveClassList();
-                        $('#menuModal').modal("hide");
-                    });
-        
-                    /* Show about content */
-                    $('#aboutBtn').click(function () {
-                        $('#aboutContent').show();
-                    });
-                }
-            }
-        });
-    </script>
 </head>
 
-<body>
+<body ng-app="vpTemplate">
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -370,34 +76,35 @@
 
     <iframe seamless id="webview"></iframe>
 
-    <div class="modal fade" id="menuModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="menuModal" tabindex="-1" role="dialog" ng-controller="MenuButtons">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Menü</h4>
+                    <h4 class="modal-title">{{ title }}</h4>
                 </div>
 
                 <div class="modal-body">
                     <div class="form-group">
 
-                        <label for="setCalendarViewBtn">Ansichten:</label>
-                        <button name="setCalendarViewBtn" type="button" class="btn btn-default form-control setCalendarViewBtn"><span class="glyphicon glyphicon-calendar" aria-hidden="true" aria-label="Kalenderansicht"></span>Kalender</button>
+                        <label for="setCalendarViewBtn">{{ viewLabel }}</label>
+                        <button name="setCalendarViewBtn" type="button" class="btn btn-default form-control setCalendarViewBtn"><span class="glyphicon glyphicon-calendar" aria-hidden="true" aria-label="{{ calendarBtn }}"></span>{{ calendarBtn }}</button>
 
-                        <button type="button" class="btn btn-default form-control setListViewBtn"><span class="glyphicon glyphicon-list" aria-hidden="true" aria-label="Listenansicht"></span>Liste</button>
+                        <button type="button" class="btn btn-default form-control setListViewBtn"><span class="glyphicon glyphicon-list" aria-hidden="true" aria-label="{{ listBtn }}"></span>{{ listBtn }}</button>
 
                         <hr />
 
-                        <button id="refreshClassList" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-refresh" aria-hidden="true" aria-label="Planbezeichnungen aktualisieren"></span>Planbez. aktualisieren</button>
+                        <button id="refreshClassList" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-refresh" aria-hidden="true" aria-label="{{ refreshClassListBtn }}"></span>{{ refreshClassListBtn }}</button>
 
-                        <button id="aboutBtn" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" aria-label="Über diese WebApp"></span>Über diese WebApp</button>
+                        <button id="aboutBtn" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" aria-label="{{ aboutBtn }}"></span>{{ aboutBtn }}</button>
                     </div>
 
                     <div id="aboutContent" style="display: none;">
                         <div style="float: left; background-color: rgb(51, 51, 51); padding: 1em; margin: 0.5em;">
-                            <img src="logo.png" />
+                            <img src="assets/img/logo.png" />
                         </div>
-                        Diese App wurde mithilfe diverse HTML5-Webtechnologien entwickelt. Darunter befinden sich folgende:
+                        
+                        <p>{{ aboutTxt }}</p>                        
 
                         <ul class="list-group" style="clear: left;">
                             <li class="list-group-item">Local Storage</li>
@@ -406,33 +113,33 @@
                             <li class="list-group-item">jQuery</li>
                         </ul>
 
-                        <img src="html5-badge.png" /> <span class="glyphicon glyphicon-copyright-mark"></span> 2015 Maik Wöhl
+                        <img src="assets/img/html5-badge.png" /> <span class="glyphicon glyphicon-copyright-mark"></span> 2015 Maik Wöhl
                     </div>
                 </div>
 
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">{{ close }}</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade classSelectionModal" tabindex="-1" role="dialog">
+    <div class="modal fade classSelectionModal" tabindex="-1" role="dialog" ng-controller="ClassPicker">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Plan auswählen</h4>
+                    <h4 class="modal-title" id="myModalLabel">{{ title }}</h4>
                 </div>
 
                 <div class="modal-body container-fluid">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary form-control setBigPlanBtn"><span class="glyphicon glyphicon-home" aria-hidden="true" aria-label="Gesamtplan aufrufen"></span>&nbsp;Gesamtplan aufrufen</button>
+                        <button type="button" class="btn btn-primary form-control setBigPlanBtn"><span class="glyphicon glyphicon-home" aria-hidden="true" aria-label="Gesamtplan aufrufen"></span>&nbsp; {{ bigPlan }}</button>
                         <br />
                         <div class="row">
                             <div class="col-md-8">
-                                <label for="classListSelector">Einzelplan:</label>
+                                <label for="classListSelector">{{ classListSelectorLabel }}</label>
                                 <select name="classListSelector" id="classListSelector" class="form-control">
                                     <option value="1">TG13-1</option>
                                     <option value="2">TG12-1</option>
@@ -445,7 +152,7 @@
                             </div>
                         </div>
                         <br />
-                        <label for="favListSelector">Aus Favoriten auswählen:</label>
+                        <label for="favListSelector">{{ favClassListSelectorLabel }}</label>
                         <select name="favListSelector" id="favListSelector" class="form-control" placeholder="Auswählen">
                             <option value="0">Fav 1</option>
                             <option value="1">Fav 2</option>
@@ -458,43 +165,42 @@
 
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" id="setPlanBtn" style="display: none;">Aufrufen</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ dismissBtn }}</button>
+                    <button type="button" class="btn btn-primary" id="setPlanBtn" style="display: none;">{{ selectBtn }}</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="modal fade authModal" tabindex="-1" role="dialog">
+    <div class="modal fade authModal" tabindex="-1" role="dialog" ng-controller="LoginDialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-                    <h4 class="modal-title" id="myModalLabel">Zugangsdaten erforderlich</h4>
+                    <h4 class="modal-title" id="myModalLabel">{{ title }}</h4>
                 </div>
 
                 <div class="modal-body container-fluid">
-                    <p>Die Listen der Lehrer sind geschützt. Bitte geben Sie hier die erforderlichen Zugangsdaten an.</p>
-                    <p>
-                        Diese werden nur für den Moment der Plan-Aktualisierung benötigt und nach erfolgreichem Herunterladen der Daten
-                        wieder gelöscht.
-                    </p>
+                    
+                    <div>
+                        <p ng-repeat="description in descriptions">{{ description }}</p>
+                    </div>
                     
                     <div class="alert alert-danger collapse" role="alert" id="wrongCredentialsAlert">
                         <span class="glyphicon glyphicon-alert"></span>
-                        Die Zugangsdaten scheinen nicht zu stimmen. Versuchen Sie es erneut.
+                        {{ wrongCredentialsAlert }}
                     </div>
                     
                     <div class="form-group">
                         
-                        <label for="username">Benutzername:</label>
+                        <label for="username">{{ username }}</label>
                         <div class="input-group">
                             <span class="input-group-addon" id="userAddon"><span class="glyphicon glyphicon-user"></span></span>
                             <input type="text" name="username" id="authUsername" class="form-control" placeholder="Hans" aria-describedby="userAddon" />
                         </div>
                         
                         
-                        <label for="password">Passwort:</label>
+                        <label for="password">{{ password }}</label>
                         <div class="input-group">
                             <span class="input-group-addon" id="pwdAddon"><span class="glyphicon glyphicon-lock"></span></span>
                             <input type="password" name="password" id="authPassword" class="form-control" aria-describedby="pwdAddon" />
@@ -504,8 +210,8 @@
 
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" id="authLoginCancel">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" id="authLogin">Einloggen</button>
+                    <button type="button" class="btn btn-default" id="authLoginCancel">{{ dismissBtn }}</button>
+                    <button type="button" class="btn btn-primary" id="authLogin">{{ loginBtn }}</button>
                 </div>
             </div>
         </div>

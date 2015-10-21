@@ -225,3 +225,5 @@ pip-log.txt
 nodeDevServer.js
 node_modules/
 typings/node
+assets/js/tsconfig.json
+tsd.json

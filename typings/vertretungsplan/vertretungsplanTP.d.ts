@@ -99,8 +99,9 @@ declare class VertretungsplanTP {
     /**
      * Gets the classlist out of localStorage.
      * @param listType This parameter tells the getClassList() method what list should be loaded out of storage.
+     * @returns list of classes
      */
-    getClassList(listType: string): void;
+    getClassList(listType: string): string[];
     /**
      * Sets the class ID property.
      * @param id The new class ID which should saved into the class property.
