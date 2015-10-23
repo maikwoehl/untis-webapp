@@ -99,7 +99,9 @@
                         <button id="aboutBtn" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" aria-label="{{ aboutBtn }}"></span>{{ aboutBtn }}</button>
                     </div>
 
-                    <div id="aboutContent" style="display: none;">
+                    <div id="aboutContent" style="display: none;">                        
+                        <h3 class="page-header">UNTIS-WebApp <small>Responsive, Fast and HTML5</small></h3>
+                        
                         <div style="float: left; background-color: rgb(51, 51, 51); padding: 1em; margin: 0.5em;">
                             <img src="assets/img/logo.png" />
                         </div>
@@ -109,8 +111,10 @@
                         <ul class="list-group" style="clear: left;">
                             <li class="list-group-item">Local Storage</li>
                             <li class="list-group-item">AJAX / XMLHttpRequest</li>
-                            <li class="list-group-item">Bootstrap</li>
-                            <li class="list-group-item">jQuery</li>
+                            <li class="list-group-item">Bootstrap <span class="badge">3.3.5</span></li>
+                            <li class="list-group-item">jQuery <span class="badge">1.11.3</span></li>
+                            <li class="list-group-item">TypeScript <span class="badge">1.6</span></li>
+                            <li class="list-group-item">AngularJS <span class="badge">1.5</span></li>
                         </ul>
 
                         <img src="assets/img/html5-badge.png" /> <span class="glyphicon glyphicon-copyright-mark"></span> 2015 Maik Wöhl
@@ -217,81 +221,87 @@
         </div>
     </div>
 
-    <div class="modal fade" id="getStartedModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="getStartedModal" tabindex="-1" role="dialog" ng-controller="FirstVisit">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Erste Schritte</h4>
+                    <h4 class="modal-title">{{ title }}</h4>
                 </div>
 
                 <div class="modal-body">
-                    <p>Willkommen in der Vertretungsplan-WebApp. Diese wurde mithilfe von HTML5 realisiert.</p>
+                    
+                    <div>
+                        <p ng-repeat="desc in descriptions">{{ desc }}</p>
+                    </div>
 
-                    <p>Folgende Schaltflächen kannst du hier finden:</p>
-
-                    <table class="table">
+                    <label for="menuBar">{{ menuBarTableTitle }}</label>
+                    <table name="menuBar" class="table">
                         <tr>
                             <td><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></td>
-                            <td>Die Kalenderwoche eine Woche zurückschalten.</td>
+                            <td>{{ arrow_left }}</td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></td>
-                            <td>Die Kalenderwoche eine Woche vorschalten.</td>
+                            <td>{{ arrow_right }}</td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-time" aria-hidden="true"></span></td>
-                            <td>Die aktuelle Kalenderwoche.</td>
+                            <td>{{ time }}</td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></td>
-                            <td>Ansichten anzeigen/wechseln und auf die Einstellungen zugreifen.</td>
+                            <td>{{ hamburger }}</td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></td>
-                            <td>Planauswahlmenü öffnen.</td>
+                            <td>{{ pushpin }}</td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></td>
-                            <td>Kalenderansicht öffnen. <span class="label label-info">Desktop</span></td>
+                            <td>{{ calendar }} <span class="label label-default">{{ notMobileReady }}</span></td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-list" aria-hidden="true"></span></td>
-                            <td>Listenansicht öffnen. <span class="label label-info">Desktop</span></td>
+                            <td>{{ list }} <span class="label label-default">{{ notMobileReady }}</span></td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-home" aria-hidden="true"></span></td>
-                            <td>Gesamtplan öffnen. <span class="label label-info">Desktop</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></td>
-                            <td>Planbezeichnungen aktualisieren.</td>
-                        </tr>
-                        <tr>
-                            <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                            <td>Hinweise und Informationen zu dieser WebApp.</td>
+                            <td>{{ home }} <span class="label label-default">{{ notMobileReady }}</span></td>
                         </tr>
 
                         <tr>
                             <td><span class="glyphicon glyphicon-star" aria-hidden="true"></span></td>
-                            <td>Aktueller Plan ist zu Favoriten hinzugefügt.</td>
+                            <td>{{ star }} <span class="label label-default">{{ notMobileReady }}</span></td>
                         </tr>
 
                         <tr>
                             <td><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></td>
-                            <td>Aktueller Plan kann zu den Favoriten hinzugefügt werden.</td>
+                            <td>{{ star_empty }} <span class="label label-default">{{ notMobileReady }}</span></td>
                         </tr>
                         <tr>
                             <td><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></td>
-                            <td>Lehrermodus aktivieren <span class="label label-success">Coming soon</span></td>
+                            <td>{{ teacherMode }} <span class="label label-primary">{{ comingSoon }}</span> <span class="label label-default">{{ notMobileReady }}</span></td>
+                        </tr>
+                    </table>
+                    
+                    <label for="menuAndDialogs">{{ menuAndDialogTableTitle }}</label>
+                    <table name="menuAndDialogs" class="table">
+                        <tr>
+                            <td><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></td>
+                            <td>{{ refresh }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                            <td>{{ question_sign }}</td>
                         </tr>
                     </table>
 
-                    <span class="label label-info">Desktop</span> Alle Elemente mit nebenstehendem Symbol werden nur bei genügend Platz in der Menüleiste angezeigt. Diese Funktionen sind weiterhin über das Menü bzw. dem Planauswahlmenü verfügbar.
+                    <span class="label label-default">{{ notMobileReady }}</span> {{ notmobileready_description }}
                 </div>
 
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="getStartedBtn" data-dismiss="modal">Anfangen</button>
+                    <button type="button" class="btn btn-primary btn-lg" id="getStartedBtn" data-dismiss="modal">{{ beginBtn }}</button>
                 </div>
             </div>
         </div>
