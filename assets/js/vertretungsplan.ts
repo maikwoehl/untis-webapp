@@ -19,16 +19,36 @@ function getWeekNumber(): number {
 }
 
 /**
+ * Settings for Vertretungsplan (interfacing a JSON-Object)
+ */
+interface VertretungsplanSettings {
+    /**
+     * The DOM-ID of the iFrame-Object where the UNTIS web plan will show up. 
+     */
+    canvas: string;
+    
+    /**
+     * Filename of language file (de_DE.json -> de_DE).
+     */
+    language?: string;
+}
+
+/**
  * Library to interface with UNTIS Web Plans.
  */
-class VertretungsplanTP {
+class Vertretungsplan {
 	
 	/* Properties */
     
     /**
      * The DOM-ID of the iFrame-Object where the UNTIS web plan will show up.
      */
-	webView: string;
+    canvas: string;
+    
+    /**
+     * Filename of language file (de_DE.json -> de_DE).
+     */
+    language: string;
 	
     /**
      * Sets and gets the class identifier which corresponds to different classes and courses inside the web plan.
@@ -85,10 +105,11 @@ class VertretungsplanTP {
 	
 	/**
      * VetretungsplanTP needs one parameter for the constructor: The ID of the iFrame that will show up all content.
-     * @param webViewElementID DOM-ID of the iFrame Element where plans are loaded.
+     * @param settings JSON-Object with settings for Vertretungsplan
      */
-	constructor(public webViewElementID: string) {
-		this.webView = webViewElementID;
+	constructor(public settings: VertretungsplanSettings) {
+        this.canvas = settings.canvas;
+        this.language = settings.language || "de_DE";
 	
 		if (localStorage.getItem("classID") == null) {
 			this.classID = 1;
@@ -150,7 +171,7 @@ class VertretungsplanTP {
         }
     }
 
-        document.getElementById(this.webView).setAttribute("src", navLink);
+        document.getElementById(this.canvas).setAttribute("src", navLink);
     }
 
     /**

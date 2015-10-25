@@ -4,10 +4,6 @@ $(document).ready(function () {
 	{
 		/* Resize WebView to fit screen */
 		$('#webview').css("height", window.innerHeight - 50);
-
-		/* Create new VP-Object */
-		//var vp = new Vertretungsplan("webview");
-		var vp = new VertretungsplanTP("webview");
 		
 		/* Set CW */
 		$('#cwDisplay').html(vp.CW.toString());

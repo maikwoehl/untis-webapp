@@ -8,4 +8,4 @@ These task are currently in the pipe:
 
 - [ ] Load the teacher data from the school web server (get teacher access)
 - [x] Move the control-stuff into a seperate JS-file (maybe create a new control class)
-- [ ] Seperate the view-stuff from the html and use AngularJS to seperate static content and provide language files with JSON-files
+- [x] Seperate the view-stuff from the html and use AngularJS to seperate static content and provide language files with JSON-files
