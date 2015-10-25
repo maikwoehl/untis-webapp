@@ -7,14 +7,31 @@
  */
 declare function getWeekNumber(): number;
 /**
- * Library to interface with UNTIS Web Plans.
+ * Settings for Vertretungsplan (interfacing a JSON-Object)
  */
-declare class VertretungsplanTP {
-    webViewElementID: string;
+interface VertretungsplanSettings {
     /**
      * The DOM-ID of the iFrame-Object where the UNTIS web plan will show up.
      */
-    webView: string;
+    canvas: string;
+    /**
+     * Filename of language file (de_DE.json -> de_DE).
+     */
+    language?: string;
+}
+/**
+ * Library to interface with UNTIS Web Plans.
+ */
+declare class Vertretungsplan {
+    settings: VertretungsplanSettings;
+    /**
+     * The DOM-ID of the iFrame-Object where the UNTIS web plan will show up.
+     */
+    canvas: string;
+    /**
+     * Filename of language file (de_DE.json -> de_DE).
+     */
+    language: string;
     /**
      * Sets and gets the class identifier which corresponds to different classes and courses inside the web plan.
      */
@@ -65,9 +82,9 @@ declare class VertretungsplanTP {
     password: string;
     /**
      * VetretungsplanTP needs one parameter for the constructor: The ID of the iFrame that will show up all content.
-     * @param webViewElementID DOM-ID of the iFrame Element where plans are loaded.
+     * @param settings JSON-Object with settings for Vertretungsplan
      */
-    constructor(webViewElementID: string);
+    constructor(settings: VertretungsplanSettings);
     /**
      * Sets the view type of the plan.
      * @param type The type of the plan that will show up.

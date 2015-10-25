@@ -17,14 +17,15 @@ function getWeekNumber() {
 /**
  * Library to interface with UNTIS Web Plans.
  */
-var VertretungsplanTP = (function () {
+var Vertretungsplan = (function () {
     /**
      * VetretungsplanTP needs one parameter for the constructor: The ID of the iFrame that will show up all content.
-     * @param webViewElementID DOM-ID of the iFrame Element where plans are loaded.
+     * @param settings JSON-Object with settings for Vertretungsplan
      */
-    function VertretungsplanTP(webViewElementID) {
-        this.webViewElementID = webViewElementID;
-        this.webView = webViewElementID;
+    function Vertretungsplan(settings) {
+        this.settings = settings;
+        this.canvas = settings.canvas;
+        this.language = settings.language || "de_DE";
         if (localStorage.getItem("classID") == null) {
             this.classID = 1;
         }
@@ -52,14 +53,14 @@ var VertretungsplanTP = (function () {
      * Sets the view type of the plan.
      * @param type The type of the plan that will show up.
      */
-    VertretungsplanTP.prototype.setType = function (type) {
+    Vertretungsplan.prototype.setType = function (type) {
         this.currentType = type;
         localStorage.setItem("type", type);
     };
     /**
      * Creates the correct URI and sets the iFrame source to the configured web plan.
      */
-    VertretungsplanTP.prototype.navigate = function () {
+    Vertretungsplan.prototype.navigate = function () {
         var navLink = "";
         if (!this.teacherMode) {
             if (this.currentType === "bigplan") {
@@ -85,19 +86,19 @@ var VertretungsplanTP = (function () {
                 navLink = this.genericTeacherPlanStart + this.CW + "/v/v" + this.parseClassID() + ".htm";
             }
         }
-        document.getElementById(this.webView).setAttribute("src", navLink);
+        document.getElementById(this.canvas).setAttribute("src", navLink);
     };
     /**
      * Returns the current calendar week based on calculations made inside getWeekNumber().
      * @returns current Calendar week
      */
-    VertretungsplanTP.prototype.getCurrentCW = function () {
+    Vertretungsplan.prototype.getCurrentCW = function () {
         return getWeekNumber();
     };
     /**
      * Retrieves the list of the descriptive names with jQuery's AJAX methods.
      */
-    VertretungsplanTP.prototype.retrieveClassList = function () {
+    Vertretungsplan.prototype.retrieveClassList = function () {
         if (!this.teacherMode) {
             $.get("http://testapp-maikw.rhcloud.com/breakCORS/student", this.parseRawData);
         }
@@ -126,7 +127,7 @@ var VertretungsplanTP = (function () {
      * Parse the whole web page that is retrieved from the UNTIS web plans.
      * @param newRawData Represents the html of the whole page that is retrieved with retrieveClassList from the API-Server
      */
-    VertretungsplanTP.prototype.parseRawData = function (newRawData) {
+    Vertretungsplan.prototype.parseRawData = function (newRawData) {
         // Cut top 
         var workingData = newRawData.slice(newRawData.search("classes"));
         // Cut out classes
@@ -138,7 +139,7 @@ var VertretungsplanTP = (function () {
      * Parse the whole web page that is retrieved from the UNTIS teacher web plans.
      * @param newRawData  epresents the html of the whole page that is retrieved with retrieveClassList from the API-Server
      */
-    VertretungsplanTP.prototype.parseTeacherRawData = function (newRawData) {
+    Vertretungsplan.prototype.parseTeacherRawData = function (newRawData) {
         this.username = "";
         this.password = "";
         // TODO: Get credentials to test this code
@@ -155,7 +156,7 @@ var VertretungsplanTP = (function () {
      * @param listType This parameter tells the getClassList() method what list should be loaded out of storage.
      * @returns list of classes
      */
-    VertretungsplanTP.prototype.getClassList = function (listType) {
+    Vertretungsplan.prototype.getClassList = function (listType) {
         if (listType === "classes") {
             return JSON.parse(localStorage.getItem("classList"));
         }
@@ -170,7 +171,7 @@ var VertretungsplanTP = (function () {
      * Sets the class ID property.
      * @param id The new class ID which should saved into the class property.
      */
-    VertretungsplanTP.prototype.setClassID = function (id) {
+    Vertretungsplan.prototype.setClassID = function (id) {
         this.classID = id;
         localStorage.setItem("classID", this.classID.toString());
     };
@@ -178,7 +179,7 @@ var VertretungsplanTP = (function () {
      * Parse the class ID property and returns a string with leading zeros for use in the URI.
      * @returns A string like `00273` that addresses the specified class in the URI path.
      */
-    VertretungsplanTP.prototype.parseClassID = function () {
+    Vertretungsplan.prototype.parseClassID = function () {
         var classID = this.classID;
         var classNumberString;
         if (classID < 10) {
@@ -198,5 +199,5 @@ var VertretungsplanTP = (function () {
         }
         return classNumberString;
     };
-    return VertretungsplanTP;
+    return Vertretungsplan;
 })();
