@@ -1,0 +1,61 @@
+{
+	"closeBtn": "Close",
+	"dismissBtn": "Abort",
+	"selectBtn": "Select",
+	"comingSoon": "Coming soon",
+	"hamburgerMenu": {
+		"title": "Menu",
+		"viewLabel": "Views",
+		"calendarBtn": "Calendar",
+		"listBtn": "List",
+		"refreshClassListBtn": "Refresh Class-Names",
+		"aboutBtn": "About this WebApp",
+		"aboutTxt": "This app was developed with many different web technologies. These are the most important ones:"
+	},
+	"classPicker": {
+		"title": "Choose a plan",
+		"titleSmall": "plan",
+		"classListSelectorLabel": "Plan of Class/Course/Entity",
+		"favClassListSelectorLabel": "Choose from favorites",
+		"bigPlan": "Show overview",
+		"favClassListSelectorPlaceholder": "Please choose",
+		"favReady": "Favorite",
+		"favRemove": "Unfavorite"
+	},
+	"login": {
+		"title": "Login credentials needed",
+		"descriptions": [
+		"The lists of teachers are secured, please enter the login credentials below.",
+		"The login credentials will be deleted after login and only stored for a short time period of transmitting data."
+		],
+		"wrongCredentialsAlert": "The login credentials are incorrect. Please try again.",
+		"username": "Username:",
+		"password": "Password:",
+		"loginBtn": "Sign in"
+	},
+	"firstVisit": {
+		"title": "First steps",
+		"descriptions": [
+			"Welcome to the UNTIS-WebApp. This app was developed with HTML5-Technologies.",
+			"The following menu are available:"
+		],
+		"arrow_left": "Backwards in time.",
+		"arrow_right": "Forwards in time.",
+		"time": "Current calendar week",
+		"hamburger": "Change views and change settings. (Control menu)",
+		"pushpin": "Choose plan. (Dialog)",
+		"calendar": "Open calendar view.",
+		"list": "Open list view.",
+		"home": "Open overview.",
+		"refresh": "Refresh class names.", 
+		"question_sign": "Informations about the WebApp.",
+		"star": "Current plan is already one of your favorites.",
+		"star_empty": "Current plan can be added to your favorites.",
+		"teacherMode": "Activate teacher mode",
+		"notmobileready_description": "All elements with this symbol are only shown if there is enough space to display them properly. This functions are accessible from the control menu and the dialog.",
+		"beginBtn": "Start",
+		"menuBarTableTitle": "Main menu",
+		"menuAndDialogTableTitle": "Dialogs and control menu",
+		"notMobileReady": "Responsive"
+	}
+}
