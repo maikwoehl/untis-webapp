@@ -1,5 +1,7 @@
 $(document).ready(function () {
-
+	/* Global Variable for Favorite List */
+	var classFavList = [];
+	
 	/* Initialization */
 	{
 		/* Resize WebView to fit screen */
@@ -12,9 +14,6 @@ $(document).ready(function () {
 		if (localStorage.getItem("classList") == null) {
 			vp.retrieveClassList();
 		}
-		
-		/* Global Variable for Favorite List */
-		var classFavList = [];
 
 		/* First visit dialog */
 		if (localStorage.getItem("first-visit") == null) {
@@ -34,6 +33,7 @@ $(document).ready(function () {
 			localStorage.setItem("classFavList", JSON.stringify([]));
 			refreshFavListSelector();
 		} else {
+			classFavList = JSON.parse(localStorage.getItem("classFavList"));
 			refreshFavListSelector();
 		}
 		
@@ -177,7 +177,6 @@ $(document).ready(function () {
 		{
 			/* Refresh the favorite list selector */
 			function refreshFavListSelector() {
-				var classFavList;
 				if (!vp.teacherMode) {
 					classFavList = JSON.parse(localStorage.getItem("classFavList"));
 				} else {
@@ -225,7 +224,7 @@ $(document).ready(function () {
 					if (classFavList[i] == vp.classID) {
 						isAlreadyFav = true;
 						classID = i;
-						break;
+						//break;
 					}
 				}
 
@@ -264,6 +263,26 @@ $(document).ready(function () {
 				}
 
 				vp.navigate();
+				
+				isAlreadyFav = false;
+
+				for (var i = 0; i < classFavList.length; i++) {
+					if (classFavList[i] == vp.classID) {
+						isAlreadyFav = true;
+						//break;
+					}
+				}
+				
+				if (isAlreadyFav) {	
+					$('.makeFavGlyphiconStar').show();
+					$('.makeFavGlyphiconStarEmpty').hide();
+				}
+				else {
+					$('.makeFavGlyphiconStar').hide();
+					$('.makeFavGlyphiconStarEmpty').show();
+				}
+					
+				
 				$('.classSelectionModal').modal("hide");
 			});
 
@@ -277,6 +296,25 @@ $(document).ready(function () {
 				}
 
 				vp.navigate();
+				
+				isAlreadyFav = false;
+				
+				for (var i = 0; i < classFavList.length; i++) {
+					if (classFavList[i] == vp.classID) {
+						isAlreadyFav = true;
+						//break;
+					}
+				}
+				
+				if (isAlreadyFav) {	
+					$('.makeFavGlyphiconStar').show();
+					$('.makeFavGlyphiconStarEmpty').hide();
+				}
+				else {
+					$('.makeFavGlyphiconStar').hide();
+					$('.makeFavGlyphiconStarEmpty').show();
+				}
+				
 				$('.classSelectionModal').modal("hide");
 
 			});
