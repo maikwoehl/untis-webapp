@@ -100,7 +100,14 @@ var Vertretungsplan = (function () {
      */
     Vertretungsplan.prototype.retrieveClassList = function () {
         if (!this.teacherMode) {
-            $.get("http://testapp-maikw.rhcloud.com/breakCORS/student", this.parseRawData);
+            //$.get("http://testapp-maikw.rhcloud.com/breakCORS/student", this.parseRawData);   
+            $.ajax({
+                url: "http://testapp-maikw.rhcloud.com/breakCORS/student",
+                //url: "http://127.0.0.1:8888/breakCORS/student",
+                type: "GET",
+                cache: false,
+                success: this.parseRawData
+            });
         }
         else {
             /* Access with POST */
@@ -117,6 +124,7 @@ var Vertretungsplan = (function () {
                 url: "http://testapp-maikw.rhcloud.com/breakCORS/teacher",
                 //url: "http://127.0.0.1:8888/breakCORS/teacher",
                 type: "POST",
+                cache: false,
                 data: authData,
                 success: this.parseTeacherRawData,
                 error: errorHandler
