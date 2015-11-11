@@ -26,6 +26,17 @@ span.glyphicon {
     margin-top: 1.7em;
 }
 
+#progress {
+    width: 60%;
+    height: 0.5em;
+    margin-left: 20%;
+    margin-right: 20%; 
+}
+
+#progressbar {
+    height: 0.5em;
+}
+
 @media (max-width: 780px) {
     .navbar-header,
     #html5-badge {

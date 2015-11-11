@@ -103,7 +103,7 @@ var Vertretungsplan = (function () {
             //$.get("http://testapp-maikw.rhcloud.com/breakCORS/student", this.parseRawData);   
             $.ajax({
                 url: "http://testapp-maikw.rhcloud.com/breakCORS/student",
-                //url: "http://127.0.0.1:8888/breakCORS/student",
+                //url: "http://localhost:8888/breakCORS/student",
                 type: "GET",
                 cache: false,
                 success: this.parseRawData
