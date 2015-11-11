@@ -1,6 +1,48 @@
 $(document).ready(function () {
 	/* Global Variable for Favorite List */
 	var classFavList = [];
+	var initClassSelector = "";
+	
+	/* This method must be loaded first (M_Edge is very strict) */
+	/* Refresh the favorite list selector */
+	function refreshFavListSelector() {
+		if (!vp.teacherMode) {
+			classFavList = JSON.parse(localStorage.getItem("classFavList"));
+		} else {
+			classFavList = JSON.parse(localStorage.getItem("teacherFavList"));
+		}
+
+		$('#favListSelector').empty();
+		var classList = vp.getClassList("classes");
+
+		var isFaved = false;
+
+		$('#favListSelector').append('<option value="0">' + lang.classPicker["favClassListSelectorPlaceholder"] + '</option>');
+
+		for (var i = 0; i < classFavList.length; i++) {
+
+			if (classFavList[i] == vp.classID) {
+				isFaved = true;
+			}
+
+			$('#favListSelector').append('<option value="' +
+				classFavList[i] +
+				'">' +
+				classList[classFavList[i] - 1] +
+				'</option>');
+		}
+
+		if (isFaved) {
+			$('#makeFavLabel').html(lang.classPicker["favRemove"]);
+			$('.makeFavGlyphiconStar').show();
+			$('.makeFavGlyphiconStarEmpty').hide();
+
+		} else {
+			$('#makeFavLabel').html(lang.classPicker["favReady"]);
+			$('.makeFavGlyphiconStar').hide();
+			$('.makeFavGlyphiconStarEmpty').show();
+		}
+	}
 	
 	/* Initialization */
 	{
@@ -44,6 +86,40 @@ $(document).ready(function () {
 		} else {
 			refreshFavListSelector();
 		}
+
+		initClassSelector = sessionStorage.getItem("classSelector_initialized") || "false";
+
+		if (initClassSelector === "false") {
+			$('#classListSelector').empty();
+			var classList = vp.getClassList("classes");
+
+			$('#progressbar').attr("aria-valuemax", classList.length);
+
+			for (var i = 0; i < classList.length; i++) {
+				$('#progressbar').attr("aria-valuenow", i);
+				$('#progressbarText').html(i + "/" + classList.Length);
+				
+				var width = (i / classList.length) * 100;
+				$('#progressbar').css("width", "" + width + "%");
+				
+				$('#classListSelector').append('<option value="' +
+					(i + 1) +
+					'">' +
+					classList[i] +
+					'</option>');
+			}
+
+			sessionStorage.setItem("classSelector_initialized", "true");
+			
+			window.setTimeout(function () { 
+				$('#progress').fadeOut();
+			}, 1500);
+		}
+		else {
+			$('#progress').hide();
+		}
+		
+
 	}
 
 	/* Event Handler */
@@ -67,17 +143,6 @@ $(document).ready(function () {
 	
 			/* Show Event for class selection modal dialog */
 			$('.classSelectionModal').on("show.bs.modal", function (e) {
-				$('#classListSelector').empty();
-				var classList = vp.getClassList("classes");
-
-				for (var i = 0; i < classList.length; i++) {
-					$('#classListSelector').append('<option value="' + 
-					(i + 1) + 
-					'">' + 
-					classList[i] + 
-					'</option>');
-				}
-
 				if (localStorage.getItem("classID") != null) {
 					$('#classListSelector option[value="' + vp.classID.toString() + '"]')
 						.attr("selected", "true");
@@ -147,8 +212,8 @@ $(document).ready(function () {
 				vp.navigate();
 				$('#menuModal').modal("hide");
 			});
-			
-			$('#activateTeacherMode').click(function() {
+
+			$('#activateTeacherMode').click(function () {
 				if (!vp.teacherMode) {
 					vp.teacherMode = true;
 					$('.authModal').modal("show");
@@ -156,65 +221,25 @@ $(document).ready(function () {
 					vp.teacherMode = false;
 				}
 			});
-			
-			$('#authLoginCancel').click(function() {
+
+			$('#authLoginCancel').click(function () {
 				vp.teacherMode = false;
 				$('#activateTeacherMode').button("toggle");
 				$('.authModal').modal("hide");
 			});
-			
-			$('#authLogin').click(function() {
+
+			$('#authLogin').click(function () {
 				$('#wrongCredentialsAlert').hide();
-				
+
 				vp.username = $('#authUsername').val();
 				vp.password = $('#authPassword').val();
-				
+
 				vp.retrieveClassList();
 			});
 		}
-
+		
 		/* Favorites Management */
 		{
-			/* Refresh the favorite list selector */
-			function refreshFavListSelector() {
-				if (!vp.teacherMode) {
-					classFavList = JSON.parse(localStorage.getItem("classFavList"));
-				} else {
-					classFavList = JSON.parse(localStorage.getItem("teacherFavList"));
-				}
-				
-				$('#favListSelector').empty();
-				var classList = vp.getClassList("classes");
-
-				var isFaved = false;
-
-				$('#favListSelector').append('<option value="0">' + lang.classPicker["favClassListSelectorPlaceholder"] + '</option>');
-
-				for (var i = 0; i < classFavList.length; i++) {
-
-					if (classFavList[i] == vp.classID) {
-						isFaved = true;
-					}
-
-					$('#favListSelector').append('<option value="' + 
-						classFavList[i] + 
-						'">' + 
-						classList[classFavList[i] - 1] + 
-						'</option>');
-				}
-
-				if (isFaved) {
-					$('#makeFavLabel').html(lang.classPicker["favRemove"]);
-					$('.makeFavGlyphiconStar').show();
-					$('.makeFavGlyphiconStarEmpty').hide();
-
-				} else {
-					$('#makeFavLabel').html(lang.classPicker["favReady"]);
-					$('.makeFavGlyphiconStar').hide();
-					$('.makeFavGlyphiconStarEmpty').show();
-				}
-			}
-					
 			/* Add a new favorite to favorite list */
 			$('.makeFav').click(function () {
 				isAlreadyFav = false;
@@ -230,17 +255,17 @@ $(document).ready(function () {
 
 				if (!isAlreadyFav) {
 					classFavList[classFavList.length] = vp.classID;
-						
+
 					if (!vp.teacherMode) {
 						localStorage.setItem("classFavList", JSON.stringify(classFavList));
 					} else {
 						localStorage.setItem("teacherFavList", JSON.stringify(classFavList));
 					}
-	
+
 					refreshFavListSelector();
 				} else {
 					classFavList.splice(classID, 1);
-					
+
 					if (!vp.teacherMode) {
 						localStorage.setItem("classFavList", JSON.stringify(classFavList));
 					} else {
@@ -263,7 +288,7 @@ $(document).ready(function () {
 				}
 
 				vp.navigate();
-				
+
 				isAlreadyFav = false;
 
 				for (var i = 0; i < classFavList.length; i++) {
@@ -272,8 +297,8 @@ $(document).ready(function () {
 						//break;
 					}
 				}
-				
-				if (isAlreadyFav) {	
+
+				if (isAlreadyFav) {
 					$('.makeFavGlyphiconStar').show();
 					$('.makeFavGlyphiconStarEmpty').hide();
 				}
@@ -281,8 +306,8 @@ $(document).ready(function () {
 					$('.makeFavGlyphiconStar').hide();
 					$('.makeFavGlyphiconStarEmpty').show();
 				}
-					
-				
+
+
 				$('.classSelectionModal').modal("hide");
 			});
 
@@ -296,17 +321,17 @@ $(document).ready(function () {
 				}
 
 				vp.navigate();
-				
+
 				isAlreadyFav = false;
-				
+
 				for (var i = 0; i < classFavList.length; i++) {
 					if (classFavList[i] == vp.classID) {
 						isAlreadyFav = true;
 						//break;
 					}
 				}
-				
-				if (isAlreadyFav) {	
+
+				if (isAlreadyFav) {
 					$('.makeFavGlyphiconStar').show();
 					$('.makeFavGlyphiconStarEmpty').hide();
 				}
@@ -314,7 +339,7 @@ $(document).ready(function () {
 					$('.makeFavGlyphiconStar').hide();
 					$('.makeFavGlyphiconStarEmpty').show();
 				}
-				
+
 				$('.classSelectionModal').modal("hide");
 
 			});
@@ -325,6 +350,21 @@ $(document).ready(function () {
 			/* Refresh the class list / download a new version of classlist */
 			$('#refreshClassList').click(function () {
 				vp.retrieveClassList();
+				sessionStorage.setItem("classSelector_initialized", "false");
+
+				$('#classListSelector').empty();
+				var classList = vp.getClassList("classes");
+
+				for (var i = 0; i < classList.length; i++) {
+					$('#classListSelector').append('<option value="' +
+						(i + 1) +
+						'">' +
+						classList[i] +
+						'</option>');
+				}
+				
+				sessionStorage.setItem("classSelector_initialized", "false");
+				
 				$('#menuModal').modal("hide");
 			});
 
