@@ -15,8 +15,8 @@
 	"classPicker": {
 		"title": "Choose a plan",
 		"titleSmall": "plan",
-		"classListSelectorLabel": "Plan of Class/Course/Entity",
-		"favClassListSelectorLabel": "Choose from favorites",
+		"classListSelectorLabel": "Plan of Class/Course/Entity:",
+		"favClassListSelectorLabel": "Choose from favorites:",
 		"bigPlan": "Show overview",
 		"favClassListSelectorPlaceholder": "Please choose",
 		"favReady": "Favorite",

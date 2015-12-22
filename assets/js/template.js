@@ -15,7 +15,7 @@ angular.module("vpTemplate", [])
         $scope.title = lang.classPicker["title"];
         $scope.bigPlan = lang.classPicker["bigPlan"];
         $scope.classListSelectorLabel = lang.classPicker["classListSelectorLabel"];
-        $scope.favClassListSelectorlabel = lang.classPicker["favClassListSelectorLabel"];
+        $scope.favClassListSelectorLabel = lang.classPicker["favClassListSelectorLabel"];
         $scope.dismissBtn = lang["dismissBtn"];
         $scope.selectBtn = lang["selectBtn"];
     }])
