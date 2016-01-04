@@ -26,13 +26,14 @@ var Vertretungsplan = (function () {
         this.settings = settings;
         this.canvas = settings.canvas;
         this.language = settings.language || "de_DE";
+        this.switchYearAuto = settings.switchYearAuto || true;
         if (localStorage.getItem("classID") == null) {
             this.classID = 1;
         }
         else {
             this.classID = localStorage.getItem("classID");
         }
-        this.CW = getWeekNumber();
+        this.CW = this.getCurrentCW();
         this.genericPlanStart = "http://www.bbs-lingen-gf.de/homepage/vertretungsplan/schueler/Vertretungen-Klassen/";
         this.genericTeacherPlanStart = "http://www.bbs-lingen-gf.de/homepage/vertretungsplan/lehrer/Vertretungen-Lehrer/";
         this.bigPlanEnding = "w/w00000.htm";
@@ -62,28 +63,32 @@ var Vertretungsplan = (function () {
      */
     Vertretungsplan.prototype.navigate = function () {
         var navLink = "";
+        var cw = "";
+        if (this.CW.toString().length < 2) {
+            cw = "0" + this.CW.toString();
+        }
         if (!this.teacherMode) {
             if (this.currentType === "bigplan") {
                 //localStorage.removeItem("classID");
-                navLink = this.genericPlanStart + this.CW + "/" + this.bigPlanEnding;
+                navLink = this.genericPlanStart + cw + "/" + this.bigPlanEnding;
             }
             else if (this.currentType === "calendar") {
-                navLink = this.genericPlanStart + this.CW + "/c/c" + this.parseClassID() + ".htm";
+                navLink = this.genericPlanStart + cw + "/c/c" + this.parseClassID() + ".htm";
             }
             else if (this.currentType === "list") {
-                navLink = this.genericPlanStart + this.CW + "/w/w" + this.parseClassID() + ".htm";
+                navLink = this.genericPlanStart + cw + "/w/w" + this.parseClassID() + ".htm";
             }
         }
         else {
             if (this.currentType === "bigplan") {
                 //localStorage.removeItem("classID");
-                navLink = this.genericTeacherPlanStart + this.CW + "/" + this.bigPlanEnding;
+                navLink = this.genericTeacherPlanStart + cw + "/" + this.bigPlanEnding;
             }
             else if (this.currentType === "calendar") {
-                navLink = this.genericTeacherPlanStart + this.CW + "/t/t" + this.parseClassID() + ".htm";
+                navLink = this.genericTeacherPlanStart + cw + "/t/t" + this.parseClassID() + ".htm";
             }
             else if (this.currentType === "list") {
-                navLink = this.genericTeacherPlanStart + this.CW + "/v/v" + this.parseClassID() + ".htm";
+                navLink = this.genericTeacherPlanStart + cw + "/v/v" + this.parseClassID() + ".htm";
             }
         }
         document.getElementById(this.canvas).setAttribute("src", navLink);
@@ -93,7 +98,16 @@ var Vertretungsplan = (function () {
      * @returns current Calendar week
      */
     Vertretungsplan.prototype.getCurrentCW = function () {
-        return getWeekNumber();
+        if (this.switchYearAuto) {
+            var cw = getWeekNumber();
+            if (cw > 51) {
+                cw = 1;
+            }
+            return cw;
+        }
+        else {
+            return getWeekNumber();
+        }
     };
     /**
      * Retrieves the list of the descriptive names with jQuery's AJAX methods.

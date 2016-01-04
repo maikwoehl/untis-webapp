@@ -1,4 +1,4 @@
-/// <reference path="../../typings/jquery/jquery.d.ts" />
+/// <reference path="../jquery/jquery.d.ts" />
 /**
  * VertretungsplanTP is a TypeScript library which allows the programmer to abstract the content from the model of the UNTIS web plans and from the model of the webapp itself.
  */
@@ -18,6 +18,10 @@ interface VertretungsplanSettings {
      * Filename of language file (de_DE.json -> de_DE).
      */
     language?: string;
+    /**
+    * If true, the calendar week will be switched automatically at the end of the year.
+    */
+    switchYearAuto?: boolean;
 }
 /**
  * Library to interface with UNTIS Web Plans.
@@ -32,6 +36,10 @@ declare class Vertretungsplan {
      * Filename of language file (de_DE.json -> de_DE).
      */
     language: string;
+    /**
+     * If true, the calendar week will be switched automatically at the end of the year.
+     */
+    switchYearAuto: boolean;
     /**
      * Sets and gets the class identifier which corresponds to different classes and courses inside the web plan.
      */

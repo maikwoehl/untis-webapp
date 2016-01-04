@@ -23,7 +23,8 @@
     var lang;
     
     var vp = new Vertretungsplan({
-        canvas: "webview"
+        canvas: "webview",
+        switchYearAuto: true
     });
     
     $.ajax({
@@ -182,7 +183,7 @@
                             </div>
                         </div>
                         <br />
-                        <label for="favListSelector">{{ favClassListSelectorLabel }} Hey</label>
+                        <label for="favListSelector">{{ favClassListSelectorLabel }}</label>
                         <select name="favListSelector" id="favListSelector" class="form-control" placeholder="Auswählen">
                             <option value="0">Fav 1</option>
                             <option value="1">Fav 2</option>
