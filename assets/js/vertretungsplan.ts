@@ -15,7 +15,7 @@ function getWeekNumber(): number {
     var d2: any;
     d2 = new Date(d.getFullYear(), 0, 1);
 
-    return Math.ceil((((d - d2) / 8.64e7) + 1) / 7);
+    return (Math.ceil((((d - d2) / 8.64e7) + 1) / 7)) - 1;
 }
 
 /**

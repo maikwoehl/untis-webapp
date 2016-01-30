@@ -12,7 +12,7 @@ function getWeekNumber() {
     d.setDate(d.getDate() + 4 - (d.getDay() || 7));
     var d2;
     d2 = new Date(d.getFullYear(), 0, 1);
-    return Math.ceil((((d - d2) / 8.64e7) + 1) / 7);
+    return (Math.ceil((((d - d2) / 8.64e7) + 1) / 7)) - 1;
 }
 /**
  * Library to interface with UNTIS Web Plans.
