@@ -38,6 +38,7 @@ function getWeekNumber(): number {
 /**
  * Calculates the calendar week with Date objects.
  */
+
 // function getWeekNumber(): number {
 //     var d: any;
 //     d = new Date();
