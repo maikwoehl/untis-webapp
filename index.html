@@ -6,14 +6,14 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    
+
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular.min.js"></script>
-    
-    
+
+
 
     <!-- [View] WebApp Stylesheet -->
     <link rel="stylesheet" type="text/css" href="assets/css/app.css" />
-    
+
     <!-- [Model] WebApp JavaScript Library -->
     <script type="text/javascript" src="assets/js/vertretungsplan.js"></script>
 
@@ -21,12 +21,12 @@
     <script type="text/javascript">
     /* Global variable lang to access language strings */
     var lang;
-    
+
     var vp = new Vertretungsplan({
         canvas: "webview",
         switchYearAuto: true
     });
-    
+
     $.ajax({
         url: 'lang/' + vp.language + '.json',
         async: false,
@@ -35,20 +35,20 @@
             lang = data;
         }
     });
-        
+
     </script>
-    
+
     <!-- [Controller] WebApp jQuery Event Handlers -->
     <script type="text/javascript" src="assets/js/app.js"></script>
-    
+
     <!-- [View] WebApp Angular Templating -->
     <script type="text/javascript" src="assets/js/template.js"></script>
-   
+
     <title>TuG Vertretungen</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
-    
+
+
 </head>
 
 <body ng-app="vpTemplate">
@@ -75,7 +75,7 @@
                     <button id="setClassBtn" type="button" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-pushpin" aria-hidden="true" aria-label="Plan zur Anzeige auswählen"></span>
                     </button>
                     <button type="button" class="btn btn-default navbar-btn makeFav" id="makeFavSmall"><span class="glyphicon glyphicon-star makeFavGlyphiconStar" aria-hidden="true" aria-label="Aktuellen Plan de-favorisieren"></span><span class="glyphicon glyphicon-star-empty makeFavGlyphiconStarEmpty" aria-hidden="true" aria-label="Aktuellen Plan favorisieren"></span></button>
-                    
+
                     <button type="button" id="activateTeacherMode" class="btn btn-default navbar-btn" data-toggle="button" aria-pressed="false" autocomplete="off" disabled>
                         <span class="glyphicon glyphicon-lock" aria-hidden="true" aria-label="In den Lehrermodus wechseln"></span>
                     </button>
@@ -94,13 +94,13 @@
             </div>
         </div>
     </nav>
-    
+
         <div class="progress" id="progress">
             <div id="progressbar" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="280">
                 <span id="progressbarText" class="sr-only">0%</span>
             </div>
         </div>
-    
+
     <iframe seamless id="webview"></iframe>
 
     <div class="modal fade" id="menuModal" tabindex="-1" role="dialog" ng-controller="MenuButtons">
@@ -126,14 +126,14 @@
                         <button id="aboutBtn" type="button" class="btn btn-default form-control"><span class="glyphicon glyphicon-question-sign" aria-hidden="true" aria-label="{{ aboutBtn }}"></span>{{ aboutBtn }}</button>
                     </div>
 
-                    <div id="aboutContent" style="display: none;">                        
+                    <div id="aboutContent" style="display: none;">
                         <h3 class="page-header">UNTIS-WebApp <small>Responsive, Fast and HTML5</small></h3>
-                        
+
                         <div style="float: left; background-color: rgb(51, 51, 51); padding: 1em; margin: 0.5em;">
                             <img src="assets/img/logo.png" />
                         </div>
-                        
-                        <p>{{ aboutTxt }}</p>                        
+
+                        <p>{{ aboutTxt }}</p>
 
                         <ul class="list-group" style="clear: left;">
                             <li class="list-group-item">Local Storage</li>
@@ -202,7 +202,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="modal fade authModal" tabindex="-1" role="dialog" ng-controller="LoginDialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -212,25 +212,25 @@
                 </div>
 
                 <div class="modal-body container-fluid">
-                    
+
                     <div>
                         <p ng-repeat="description in descriptions">{{ description }}</p>
                     </div>
-                    
+
                     <div class="alert alert-danger collapse" role="alert" id="wrongCredentialsAlert">
                         <span class="glyphicon glyphicon-alert"></span>
                         {{ wrongCredentialsAlert }}
                     </div>
-                    
+
                     <div class="form-group">
-                        
+
                         <label for="username">{{ username }}</label>
                         <div class="input-group">
                             <span class="input-group-addon" id="userAddon"><span class="glyphicon glyphicon-user"></span></span>
                             <input type="text" name="username" id="authUsername" class="form-control" placeholder="Hans" aria-describedby="userAddon" />
                         </div>
-                        
-                        
+
+
                         <label for="password">{{ password }}</label>
                         <div class="input-group">
                             <span class="input-group-addon" id="pwdAddon"><span class="glyphicon glyphicon-lock"></span></span>
@@ -256,7 +256,7 @@
                 </div>
 
                 <div class="modal-body">
-                    
+
                     <div>
                         <p ng-repeat="desc in descriptions">{{ desc }}</p>
                     </div>
@@ -310,7 +310,7 @@
                             <td>{{ teacherMode }} <span class="label label-primary">{{ comingSoon }}</span> <span class="label label-default">{{ notMobileReady }}</span></td>
                         </tr>
                     </table>
-                    
+
                     <label for="menuAndDialogs">{{ menuAndDialogTableTitle }}</label>
                     <table name="menuAndDialogs" class="table">
                         <tr>

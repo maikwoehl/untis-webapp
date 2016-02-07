@@ -4,19 +4,50 @@
  * VertretungsplanTP is a TypeScript library which allows the programmer to abstract the content from the model of the UNTIS web plans and from the model of the webapp itself.
  */
 
+
+function getWeekNumber(): number {  
+    // Create a copy of this date object  
+    var target: any;
+    target = new Date( (new Date).valueOf() );  
+  
+    // ISO week date weeks start on monday  
+    // so correct the day number  
+    var dayNr = ((new Date).getDay() + 6) % 7;  
+  
+    // ISO 8601 states that week 1 is the week  
+    // with the first thursday of that year.  
+    // Set the target date to the thursday in the target week  
+    target.setDate(target.getDate() - dayNr + 3);  
+  
+    // Store the millisecond value of the target date  
+    var firstThursday = target.valueOf();  
+  
+    // Set the target to the first thursday of the year  
+    // First set the target to january first  
+    target.setMonth(0, 1);  
+    // Not a thursday? Correct the date to the next thursday  
+    if (target.getDay() != 4) {
+        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }  
+  
+    // The weeknumber is the number of weeks between the   
+    // first thursday of the year and the thursday in the target week  
+    return 1 + Math.ceil((firstThursday - target) / 604800000); // 604800000 = 7 * 24 * 3600 * 1000  
+};
+
 /**
  * Calculates the calendar week with Date objects.
  */
-function getWeekNumber(): number {
-    var d: any;
-    d = new Date();
-    d.setHours(0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    var d2: any;
-    d2 = new Date(d.getFullYear(), 0, 1);
-
-    return Math.ceil((((d - d2) / 8.64e7) + 1) / 7);
-}
+// function getWeekNumber(): number {
+//     var d: any;
+//     d = new Date();
+//     d.setHours(0, 0, 0);
+//     d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+//     var d2: any;
+//     d2 = new Date(d.getFullYear(), 0, 1);
+// 
+//     return Math.ceil((((d - d2) / 8.64e7) + 1) / 7);
+// }
 
 /**
  * Settings for Vertretungsplan (interfacing a JSON-Object)
