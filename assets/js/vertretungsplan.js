@@ -76,7 +76,7 @@ var Vertretungsplan = (function () {
      */
     Vertretungsplan.prototype.navigate = function () {
         var navLink = "";
-        var cw = "";
+        var cw = this.CW.toString();
         if (this.CW.toString().length < 2) {
             cw = "0" + this.CW.toString();
         }

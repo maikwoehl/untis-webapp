@@ -194,7 +194,7 @@ class Vertretungsplan {
     navigate(): void {
         var navLink = "";
 
-        var cw = "";
+        var cw = this.CW.toString();
         
         if (this.CW.toString().length < 2)
         {
